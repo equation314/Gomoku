@@ -4,22 +4,28 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Gomoku
 TEMPLATE = app
 
+CONFIG += c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp \
     board.cpp \
-    pieces.cpp
+    pieces.cpp \
+    connectdialog.cpp \
+    player.cpp
 
 HEADERS  += mainwindow.h \
     board.h \
     const.h \
-    pieces.h
+    pieces.h \
+    connectdialog.h \
+    player.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    connectdialog.ui

@@ -4,26 +4,38 @@
 #include "const.h"
 #include "pieces.h"
 
-#include <QWidget>
 #include <QPoint>
+#include <QWidget>
 
 class Board : public QWidget
 {
+    Q_OBJECT
+
 public:
     Board(QWidget* parent = nullptr);
 
-    void PlacePiece(Pieces* pieces) { m_board[pieces->Row()][pieces->Column()] = pieces->Color(); }
-    void PlacePiece(int row, int col, Pieces::PiecesType color) { m_board[row][col] = color; }
+    //void PlacePiece(Pieces* pieces) { m_board[pieces->Row()][pieces->Column()] = pieces->Color(); }
+    void SetBlock(bool isBlock) { m_is_block = isBlock; }
+    void SetColor(Pieces::PiecesColor color) { m_color = color; }
+    //void PlacePiece(Pieces* pieces);
+    void PlacePiece(int row, int col, Pieces::PiecesColor color);
 
 protected:
-    void resizeEvent(QResizeEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void paintEvent(QPaintEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
 
 private:
-    Pieces::PiecesType m_board[Const::SIZE + 1][Const::SIZE + 1];
+    Pieces m_board[Const::SIZE + 1][Const::SIZE + 1];
     QPointF m_center;
+    Pieces::PiecesColor m_color;
     double m_cell_width;
+    bool m_is_block;
+    int m_round;
+
+signals:
+    void piecePlaced(int row, int col, Pieces::PiecesColor color);
 };
 
 #endif // BOARD_H

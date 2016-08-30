@@ -6,6 +6,12 @@
 namespace Const
 {
 
+enum NetworkIdentity
+{
+    Server,
+    Client
+};
+
 const int SIZE = 14;
 const int POINT[5][2] =
 {
@@ -18,7 +24,6 @@ const int POINT[5][2] =
 
 const QColor PIECES_COLOR[3] =
 {
-    Qt::transparent,
     Qt::white,
     Qt::black
 };
