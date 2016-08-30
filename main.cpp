@@ -8,11 +8,15 @@ int main(int argc, char *argv[])
 
     qRegisterMetaType<Pieces::PiecesColor>("Pieces::PiecesType");
 
-    ConnectDialog dialog;
-    if (dialog.exec() != QDialog::Accepted) return 0;
+    for (;;)
+    {
+        ConnectDialog dialog;
+        if (dialog.exec() != QDialog::Accepted) return 0;
 
-    MainWindow w(dialog.Type(), dialog.Ip(), dialog.Port());
-    w.show();
+        MainWindow w(dialog.Username(), dialog.Type(), dialog.Ip(), dialog.Port());
+        w.show();
 
-    return a.exec();
+        if (a.exec() != 233) break;
+    }
+    return 0;
 }

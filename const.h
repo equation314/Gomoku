@@ -24,6 +24,7 @@ const int POINT[5][2] =
 
 const QColor PIECES_COLOR[3] =
 {
+    Qt::transparent,
     Qt::white,
     Qt::black
 };

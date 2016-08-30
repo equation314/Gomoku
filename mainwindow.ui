@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Gomoku</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -27,7 +27,7 @@
        </sizepolicy>
       </property>
       <property name="text">
-       <string/>
+       <string>Waiting for connection...</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>

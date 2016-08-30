@@ -7,6 +7,7 @@ class Pieces
 public:
     enum PiecesColor
     {
+        Transpraent,
         White,
         Black
     };

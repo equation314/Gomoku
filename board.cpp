@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QMessageBox>
 
 using namespace std;
 
@@ -63,7 +64,7 @@ void Board::paintEvent(QPaintEvent* event)
                     color.setAlpha(150);
                 }
                 painter.setBrush(color);
-                painter.setPen(Qt::NoPen);
+                painter.setPen(Qt::black);
                 QPointF center((i - halfSize) * m_cell_width , (j - halfSize) * m_cell_width);
                 painter.drawEllipse(center, r, r);
                 if (piece.Round() == m_round && piece.State() == Pieces::Placed)
@@ -85,8 +86,8 @@ void Board::mouseMoveEvent(QMouseEvent* event)
             if (m_board[i][j].State() != Pieces::Placed)
             {
                 int halfSize = Const::SIZE / 2, r = m_cell_width / 2;
-                QPointF point = m_center + QPointF((i - halfSize) * m_cell_width - r / 2, (j - halfSize) * m_cell_width - r / 2);
-                if (Const::Sqr(point.x() - event->x()) + Const::Sqr(point.y() - event->y()) >= r * r)
+                QPointF center = m_center + QPointF((i - halfSize) * m_cell_width, (j - halfSize) * m_cell_width);
+                if (Const::Sqr(center.x() - event->x()) + Const::Sqr(center.y() - event->y()) >= r * r)
                     m_board[i][j].SetState(Pieces::None);
                 else
                     m_board[i][j].SetState(Pieces::Hover);
@@ -103,20 +104,74 @@ void Board::mousePressEvent(QMouseEvent* event)
             if (m_board[i][j].State() == Pieces::Hover)
             {
                 int halfSize = Const::SIZE / 2, r = m_cell_width / 2;
-                QPointF point = m_center + QPointF((i - halfSize) * m_cell_width - r / 2, (j - halfSize) * m_cell_width - r / 2);
-                if (Const::Sqr(point.x() - event->x()) + Const::Sqr(point.y() - event->y()) >= r * r) continue;
+                QPointF center = m_center + QPointF((i - halfSize) * m_cell_width, (j - halfSize) * m_cell_width);
+                if (Const::Sqr(center.x() - event->x()) + Const::Sqr(center.y() - event->y()) >= r * r) continue;
                 if (event->button() == Qt::LeftButton)
                 {
-                    PlacePiece(i, j, m_color);
                     emit piecePlaced(i, j, m_color);
+                    PlacePiece(i, j, m_color);
                     return;
                 }
             }
+}
+
+bool Board::checkWin(int row, int col, int color)
+{
+    for (int i = 0, j; i <= Const::SIZE; i = j + 1)
+    {
+        for (j = i; j <= Const::SIZE && m_board[j][col].Color() == color; j++);
+        qDebug()<<i<<' '<<j;
+        if (j - i >= 5) return true;
+    }
+    qDebug()<<"1";
+    for (int i = 0, j; i <= Const::SIZE; i = j + 1)
+    {
+        for (j = i; j <= Const::SIZE && m_board[row][j].Color() == color; j++);
+        if (j - i >= 5) return true;
+    }
+    qDebug()<<"2";
+    for (int i = 0, j, k; i <= Const::SIZE; i = j + 1)
+    {
+        for (j = i; k = j - row + col, 0 <= k && k <= Const::SIZE && m_board[j][k].Color() == color; j++);
+        if (j - i >= 5) return true;
+    }
+    qDebug()<<"3";
+    for (int i = 0, j, k; i <= Const::SIZE; i = j + 1)
+    {
+        for (j = i; k = row + col - j, 0 <= k && k <= Const::SIZE && m_board[j][k].Color() == color; j++);
+        if (j - i >= 5) return true;
+    }
+    qDebug()<<"4";
+    return false;
 }
 
 void Board::PlacePiece(int row, int col, Pieces::PiecesColor color)
 {
     m_board[row][col] = Pieces(row, col, color, ++m_round);
     this->update();
+    if (checkWin(row, col, color))
+    {
+        if (color == m_color)
+            QMessageBox::information(this, tr("Congratulation!"), tr("You win the game :-)"));
+        else
+            QMessageBox::information(this, tr("Game Over"), tr("You lose the game :-("));
+        emit restart();
+        Restart();
+    }
+    else if (m_round == Const::SIZE * Const::SIZE)
+    {
+        QMessageBox::information(this, tr("Draw"), tr("2333333333..."));
+        emit restart();
+        Restart();
+    }
 }
+
+void Board::Restart()
+{
+    m_round = 0;
+    for (int i = 0 ; i <= Const::SIZE; i++)
+        for (int j = 0 ; j <= Const::SIZE; j++) m_board[i][j] = Pieces();
+    this->update();
+}
+
 

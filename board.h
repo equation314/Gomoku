@@ -20,6 +20,8 @@ public:
     //void PlacePiece(Pieces* pieces);
     void PlacePiece(int row, int col, Pieces::PiecesColor color);
 
+    void Restart();
+
 protected:
     void resizeEvent(QResizeEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
@@ -34,7 +36,10 @@ private:
     bool m_is_block;
     int m_round;
 
+    bool checkWin(int row, int col, int color);
+
 signals:
+    void restart();
     void piecePlaced(int row, int col, Pieces::PiecesColor color);
 };
 

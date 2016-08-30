@@ -19,22 +19,27 @@ class MainWindow : public QMainWindow
 
 public:
 
-    explicit MainWindow(Const::NetworkIdentity type, const QString& ip, int port, QWidget *parent = nullptr);
+    explicit MainWindow(const QString& username, Const::NetworkIdentity type, const QString& ip, int port, QWidget *parent = nullptr);
     ~MainWindow();
+
+protected:
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;
     Const::NetworkIdentity m_type;
     QString m_ip;
     int m_port;
+    QString m_username;
 
     Player* m_player;
-    bool m_is_block;
+    bool m_is_block, m_is_closing;
 
     QTcpServer* m_server;
     QTcpSocket* m_socket;
 
     void createConnection();
+    void startGame();
 
 private slots:
     void onNewConnection();

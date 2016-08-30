@@ -2,7 +2,8 @@
 #include "ui_connectdialog.h"
 
 #include <QDebug>
-#include <QHostAddress>
+#include <QMessageBox>
+#include <QNetworkInterface>
 
 ConnectDialog::ConnectDialog(QWidget *parent) :
     QDialog(parent),
@@ -17,7 +18,18 @@ ConnectDialog::ConnectDialog(QWidget *parent) :
     ui->lineEdit_3->setValidator(validator);
     ui->lineEdit_port->setText("2333");
     ui->lineEdit_port->setValidator(new QIntValidator(0, 65536, this));
+    this->setFixedSize(this->sizeHint());
+
+    auto list = QNetworkInterface::allAddresses();
+    for (auto i : list)
+        if (i != QHostAddress::LocalHost && i.protocol() == QAbstractSocket::IPv4Protocol)
+        {
+            m_local_ip = i.toString();
+            break;
+        }
+
     on_radioButton_server_clicked();
+    ui->lineEdit_user->setFocus();
 }
 
 ConnectDialog::~ConnectDialog()
@@ -25,14 +37,50 @@ ConnectDialog::~ConnectDialog()
     delete ui;
 }
 
+void ConnectDialog::on_lineEdit_0_textChanged(const QString &arg1)
+{
+    if (!ui->lineEdit_0->isReadOnly() && arg1.toInt() > 25)
+    {
+        ui->lineEdit_1->setFocus();
+        ui->lineEdit_1->selectAll();
+    }
+}
+
+void ConnectDialog::on_lineEdit_1_textChanged(const QString &arg1)
+{
+    if (!ui->lineEdit_0->isReadOnly() && arg1.toInt() > 25)
+    {
+        ui->lineEdit_2->setFocus();
+        ui->lineEdit_2->selectAll();
+    }
+}
+
+void ConnectDialog::on_lineEdit_2_textChanged(const QString &arg1)
+{
+    if (!ui->lineEdit_0->isReadOnly() && arg1.toInt() > 25)
+    {
+        ui->lineEdit_3->setFocus();
+        ui->lineEdit_3->selectAll();
+    }
+}
+
+void ConnectDialog::on_lineEdit_3_textChanged(const QString &arg1)
+{
+    if (!ui->lineEdit_0->isReadOnly() && arg1.toInt() > 25)
+    {
+        ui->lineEdit_port->setFocus();
+        ui->lineEdit_port->selectAll();
+    }
+}
+
 void ConnectDialog::on_radioButton_server_clicked()
 {
     m_type = Const::Server;
     this->setWindowTitle(tr("Create Server"));
-    ui->label->setText(tr("Host &IP"));
+    ui->label->setText(tr("Host &IP:"));
     ui->pushButton_create->setText(tr("&Create"));
 
-    QStringList ip = QHostAddress(QHostAddress::LocalHost).toString().split('.');
+    QStringList ip = m_local_ip.split('.');
     ui->lineEdit_0->setText(ip[0]);
     ui->lineEdit_1->setText(ip[1]);
     ui->lineEdit_2->setText(ip[2]);
@@ -50,13 +98,8 @@ void ConnectDialog::on_radioButton_client_clicked()
 {
     m_type = Const::Client;
     this->setWindowTitle(tr("Connect to Server"));
-    ui->label->setText(tr("Server &IP"));
+    ui->label->setText(tr("Server &IP:"));
     ui->pushButton_create->setText(tr("&Connect"));
-    QStringList ip = QString("233.233.233.233").split('.');
-    ui->lineEdit_0->setText(ip[0]);
-    ui->lineEdit_1->setText(ip[1]);
-    ui->lineEdit_2->setText(ip[2]);
-    ui->lineEdit_3->setText(ip[3]);
     ui->lineEdit_0->setReadOnly(false);
     ui->lineEdit_1->setReadOnly(false);
     ui->lineEdit_2->setReadOnly(false);
@@ -68,46 +111,17 @@ void ConnectDialog::on_radioButton_client_clicked()
 
 void ConnectDialog::on_pushButton_create_clicked()
 {
+    if (ui->lineEdit_user->text().isEmpty())
+    {
+        QMessageBox::critical(this, tr("Username Requested"), tr("Please input your username!"));
+        ui->lineEdit_user->setFocus();
+        return;
+    }
     m_ip = QString("%1.%2.%3.%4").arg(ui->lineEdit_0->text())
                                  .arg(ui->lineEdit_1->text())
                                  .arg(ui->lineEdit_2->text())
                                  .arg(ui->lineEdit_3->text());
     m_port = ui->lineEdit_port->text().toInt();
+    m_user = ui->lineEdit_user->text();
     this->accept();
-}
-
-void ConnectDialog::on_lineEdit_0_textChanged(const QString &arg1)
-{
-    if (!ui->lineEdit_0->isReadOnly() && arg1.length() == 3)
-    {
-        ui->lineEdit_1->setFocus();
-        ui->lineEdit_1->selectAll();
-    }
-}
-
-void ConnectDialog::on_lineEdit_1_textChanged(const QString &arg1)
-{
-    if (!ui->lineEdit_0->isReadOnly() && arg1.length() == 3)
-    {
-        ui->lineEdit_2->setFocus();
-        ui->lineEdit_2->selectAll();
-    }
-}
-
-void ConnectDialog::on_lineEdit_2_textChanged(const QString &arg1)
-{
-    if (!ui->lineEdit_0->isReadOnly() && arg1.length() == 3)
-    {
-        ui->lineEdit_3->setFocus();
-        ui->lineEdit_3->selectAll();
-    }
-}
-
-void ConnectDialog::on_lineEdit_3_textChanged(const QString &arg1)
-{
-    if (!ui->lineEdit_0->isReadOnly() && arg1.length() == 3)
-    {
-        ui->lineEdit_port->setFocus();
-        ui->lineEdit_port->selectAll();
-    }
 }
