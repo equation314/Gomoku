@@ -1,8 +1,14 @@
+# Build directory
+[Bb]uild/
+
 # Compiled Object files
 *.slo
 *.lo
 *.o
 *.obj
+
+# Qt Creator user files
+*.user*
 
 # Precompiled Headers
 *.gch
