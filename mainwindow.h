@@ -27,10 +27,10 @@ protected:
 
 private:
     Ui::MainWindow *ui;
+    QString m_username;
     Const::NetworkIdentity m_type;
     QString m_ip;
     int m_port;
-    QString m_username;
 
     Player* m_player;
     bool m_is_block, m_is_closing;
@@ -40,6 +40,7 @@ private:
 
     void createConnection();
     void startGame();
+    void setBlock(bool isBlock);
 
 private slots:
     void onNewConnection();

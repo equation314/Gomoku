@@ -10,7 +10,7 @@ using namespace std;
 
 Board::Board(QWidget* parent) :
     QWidget(parent),
-    m_is_block(false), m_round(0)
+    m_is_block(true), m_round(0)
 {
     this->setMouseTracking(true);
 }

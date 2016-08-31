@@ -8,10 +8,10 @@ class Player
 public:
     Player(Pieces::PiecesColor type);
 
-    Pieces::PiecesColor Type() const { return m_type;
-                                    }
+    Pieces::PiecesColor Color() const { return m_color; }
+
 private:
-    Pieces::PiecesColor m_type;
+    Pieces::PiecesColor m_color;
     int m_time_used;
 };
 

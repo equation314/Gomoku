@@ -18,14 +18,19 @@ SOURCES += main.cpp\
     board.cpp \
     pieces.cpp \
     connectdialog.cpp \
-    player.cpp
+    player.cpp \
+    choosecolordialog.cpp
 
 HEADERS  += mainwindow.h \
     board.h \
     const.h \
     pieces.h \
     connectdialog.h \
-    player.h
+    player.h \
+    choosecolordialog.h
 
 FORMS    += mainwindow.ui \
-    connectdialog.ui
+    connectdialog.ui \
+    choosecolordialog.ui
+
+RESOURCES +=

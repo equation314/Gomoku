@@ -1,7 +1,7 @@
 #include "player.h"
 
 Player::Player(Pieces::PiecesColor type) :
-    m_type(type), m_time_used(0)
+    m_color(type), m_time_used(0)
 {
 
 }

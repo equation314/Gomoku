@@ -11,6 +11,8 @@ ConnectDialog::ConnectDialog(QWidget *parent) :
     m_type(Const::Server)
 {
     ui->setupUi(this);
+    this->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+
     QValidator* validator = new QIntValidator(0, 255, this);
     ui->lineEdit_0->setValidator(validator);
     ui->lineEdit_1->setValidator(validator);
