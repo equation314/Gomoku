@@ -8,7 +8,8 @@
 ConnectDialog::ConnectDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConnectDialog),
-    m_type(Const::Server)
+    m_type(Const::Server),
+    m_dialog(nullptr)
 {
     ui->setupUi(this);
     this->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -29,6 +30,23 @@ ConnectDialog::ConnectDialog(QWidget *parent) :
 ConnectDialog::~ConnectDialog()
 {
     delete ui;
+}
+
+
+
+void ConnectDialog::onDialPadNumClicked(int n)
+{
+    QLineEdit* lineEdit = static_cast<QLineEdit*>(this->focusWidget());
+    if (lineEdit && lineEdit->inherits("QLineEdit") && !lineEdit->isReadOnly())
+    {
+        if (n >= 0)
+            lineEdit->insert(QString::number(n));
+        else if (n == -1)
+            lineEdit->backspace();
+        else if (n == -2)
+            lineEdit->clear();
+        this->activateWindow();
+    }
 }
 
 void ConnectDialog::on_lineEdit_0_textChanged(const QString &arg1)
@@ -127,5 +145,18 @@ void ConnectDialog::on_pushButton_create_clicked()
             return;
         }
     }
+    if (m_dialog) m_dialog->hide();
     this->accept();
+}
+
+void ConnectDialog::on_pushButton_dial_pad_clicked()
+{
+    ui->pushButton_dial_pad->setEnabled(false);
+    m_dialog = new DialPadDialog(this);
+    connect(m_dialog, &DialPadDialog::numClicked, this, &ConnectDialog::onDialPadNumClicked);
+    connect(m_dialog, &DialPadDialog::rejected, this, [this]()
+    {
+        ui->pushButton_dial_pad->setEnabled(true);
+    });
+    m_dialog->show();
 }

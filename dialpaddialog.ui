@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialPadDialog</class>
+ <widget class="QDialog" name="DialPadDialog">
+  <property name="windowTitle">
+   <string>Dial Pad</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -4,6 +4,7 @@
 #include <QDialog>
 
 #include "const.h"
+#include "dialpaddialog.h"
 
 namespace Ui
 {
@@ -24,6 +25,8 @@ public:
     QString Username() const { return m_username; }
 
 private slots:
+    void onDialPadNumClicked(int n);
+
     void on_lineEdit_0_textChanged(const QString &arg1);
     void on_lineEdit_1_textChanged(const QString &arg1);
     void on_lineEdit_2_textChanged(const QString &arg1);
@@ -32,13 +35,15 @@ private slots:
     void on_radioButton_server_clicked();
     void on_radioButton_client_clicked();
     void on_pushButton_create_clicked();
+    void on_pushButton_dial_pad_clicked();
+
 
 private:
     Ui::ConnectDialog *ui;
     Const::HostType m_type;
     QString m_ip, m_username;
     int m_port;
-
+    DialPadDialog* m_dialog;
 };
 
 #endif // CONNECTDIALOG_H
