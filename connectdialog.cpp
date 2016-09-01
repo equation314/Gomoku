@@ -19,7 +19,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) :
     ui->lineEdit_2->setValidator(validator);
     ui->lineEdit_3->setValidator(validator);
     ui->lineEdit_port->setText("2333");
-    ui->lineEdit_port->setValidator(new QIntValidator(0, 65536, this));
+    ui->lineEdit_port->setValidator(new QIntValidator(0, 65535, this));
     this->setFixedSize(this->sizeHint());
 
     on_radioButton_server_clicked();

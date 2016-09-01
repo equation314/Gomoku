@@ -39,4 +39,5 @@ FORMS    += mainwindow.ui \
     connectdialog.ui \
     choosecolordialog.ui
 
-RESOURCES +=
+RESOURCES += \
+    resource/icon.qrc

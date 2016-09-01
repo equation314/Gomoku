@@ -32,7 +32,6 @@ MainWindow::MainWindow(const QString& username, Const::HostType type, const QStr
     connect(ui->board, &Board::gameOver, this, &MainWindow::onGameStartPrepare);
 
     initialize();
-    this->show();
 }
 
 MainWindow::~MainWindow()
@@ -268,4 +267,9 @@ void MainWindow::on_pushButton_start_clicked()
         emit messageSent("start");
         onChooseColor();
     }
+}
+
+void MainWindow::on_pushButton_hint_clicked()
+{
+    ui->board->ShowHint();
 }

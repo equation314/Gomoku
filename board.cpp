@@ -13,6 +13,15 @@ Board::Board(QWidget* parent) :
     m_is_block(true), m_round(0)
 {
     this->setMouseTracking(true);
+    for (int i = 0; i <= Const::SIZE; i++)
+        for (int j = 0; j <= Const::SIZE; j++) m_bomb[i][j] = 0;
+    connect(&m_bomb_timer, &QTimer::timeout, this, [this]()
+    {
+        qDebug()<<"fuck";
+        for (int i = 0; i <= Const::SIZE; i++)
+            for (int j = 0; j <= Const::SIZE; j++) m_bomb[i][j] = 0;
+        this->update();
+    });
 }
 
 void Board::resizeEvent(QResizeEvent* event)
@@ -28,6 +37,7 @@ void Board::paintEvent(QPaintEvent* event)
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
     painter.translate(m_center);
     int halfSize = Const::SIZE / 2;
     double halfWidth = Const::SIZE * m_cell_width / 2;
@@ -37,7 +47,7 @@ void Board::paintEvent(QPaintEvent* event)
     pen.setWidth(2);
     pen.setJoinStyle(Qt::MiterJoin);
     painter.setPen(pen);
-    painter.setBrush(Qt::yellow);
+    painter.setBrush(QColor(255, 255, 128));
     painter.drawRect(-frameWidth / 2, -frameWidth / 2, frameWidth, frameWidth);
 
     painter.setPen(Qt::black);
@@ -55,6 +65,10 @@ void Board::paintEvent(QPaintEvent* event)
     r = m_cell_width / 2;
     for (int i = 0; i <= Const::SIZE; i++)
         for (int j = 0; j <= Const::SIZE; j++)
+        {
+            QPointF center((i - halfSize) * m_cell_width , (j - halfSize) * m_cell_width);
+            if (m_bomb[i][j])
+                painter.drawPixmap(center.x() - r, center.y() - r, r * 2, r * 2, QPixmap(":/icon/bomb.png"));
             if (m_board[i][j].State() != Pieces::None)
             {
                 Pieces piece = m_board[i][j];
@@ -66,7 +80,6 @@ void Board::paintEvent(QPaintEvent* event)
                 }
                 painter.setBrush(color);
                 painter.setPen(Qt::black);
-                QPointF center((i - halfSize) * m_cell_width , (j - halfSize) * m_cell_width);
                 painter.drawEllipse(center, r, r);
                 if (piece.Round() == m_round && piece.State() == Pieces::Placed)
                 {
@@ -77,6 +90,7 @@ void Board::paintEvent(QPaintEvent* event)
                     painter.drawRect(center.x() - r, center.y() - r, r * 2, r * 2);
                 }
             }
+        }
 }
 
 void Board::mouseMoveEvent(QMouseEvent* event)
@@ -141,6 +155,45 @@ bool Board::checkWin(int row, int col, int color)
     return false;
 }
 
+bool Board::hasBomb(int x, int y)
+{
+    static const int dir[4][2] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}};
+                                 // --      |       \        /
+    if (m_board[x][y].Color() != Pieces::Transpraent) return false;
+    Pieces::PiecesColor oppColor = m_color == Pieces::Black ? Pieces::White : Pieces::Black;
+    m_board[x][y].SetColor(oppColor);
+
+    int n3 = 0, n4 = 0;
+    for (int i = 0; i < Const::SIZE; i++)
+        for (int j = 0; j < Const::SIZE; j++)
+            if (m_board[i][j].Color() == oppColor)
+            {
+                for (int d = 0; d < 4; d++)
+                {
+                    int ii = i, jj = j, k;
+                    for (k = 0; k < 4 && isOnBoard(ii, jj) && m_board[ii][jj].Color() == oppColor; k++, ii += dir[d][0], jj += dir[d][1]);
+                    if (k == 3 &&  isAvailable(ii, jj) && isAvailable(i - dir[d][0], j - dir[d][1]))  n3++;
+                    if (k == 4 && (isAvailable(ii, jj) || isAvailable(i - dir[d][0], j - dir[d][1]))) n4++;
+
+                    if (n3 >= 2 || (n3 && n4))
+                    {
+                        m_board[x][y].SetColor(Pieces::Transpraent);
+                        return true;
+                    }
+                }
+            }
+    m_board[x][y].SetColor(Pieces::Transpraent);
+    return false;
+}
+
+void Board::Clear()
+{
+    m_round = 0;
+    for (int i = 0 ; i <= Const::SIZE; i++)
+        for (int j = 0 ; j <= Const::SIZE; j++) m_board[i][j] = Pieces();
+    this->update();
+}
+
 void Board::PlacePiece(int row, int col, Pieces::PiecesColor color)
 {
     m_board[row][col] = Pieces(row, col, color, ++m_round);
@@ -160,12 +213,14 @@ void Board::PlacePiece(int row, int col, Pieces::PiecesColor color)
     }
 }
 
-void Board::Clear()
+void Board::ShowHint()
 {
-    m_round = 0;
-    for (int i = 0 ; i <= Const::SIZE; i++)
-        for (int j = 0 ; j <= Const::SIZE; j++) m_board[i][j] = Pieces();
+    m_bomb_timer.setSingleShot(true);
+    m_bomb_timer.start(2000);
+    qDebug()<<m_bomb_timer.isActive();
+    for (int i = 0; i <= Const::SIZE; i++)
+        for (int j = 0; j <= Const::SIZE; j++)
+            m_bomb[i][j] = hasBomb(i, j);
     this->update();
 }
-
 

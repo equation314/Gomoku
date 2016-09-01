@@ -15,8 +15,7 @@ public:
     {
         None,
         Hover,
-        Placed,
-        LastPlaced
+        Placed
     };
 
     explicit Pieces();
@@ -30,6 +29,7 @@ public:
     PiecesState State() const { return m_state; }
 
     // Setter member functions
+    void SetColor(PiecesColor color) { m_color = color; }
     void SetState(PiecesState state) { m_state = state; }
 
 private:

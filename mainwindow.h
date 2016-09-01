@@ -60,6 +60,8 @@ private slots:
     void on_pushButton_throw_clicked();
     void on_pushButton_start_clicked();
 
+    void on_pushButton_hint_clicked();
+
 signals:
     void disconnected();
     void gameStarted();

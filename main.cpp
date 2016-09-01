@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
         }
 
         MainWindow w(dialog.Username(), dialog.Type(), dialog.Ip(), dialog.Port());
-        //w.show();
+        w.show();
 
         if (a.exec() != 233) break;
     }

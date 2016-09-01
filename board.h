@@ -5,6 +5,7 @@
 #include "pieces.h"
 
 #include <QPoint>
+#include <QTimer>
 #include <QWidget>
 
 class Board : public QWidget
@@ -14,13 +15,13 @@ class Board : public QWidget
 public:
     Board(QWidget* parent = nullptr);
 
-    //void PlacePiece(Pieces* pieces) { m_board[pieces->Row()][pieces->Column()] = pieces->Color(); }
+    // Setter member functions
     void SetBlock(bool isBlock) { m_is_block = isBlock; }
     void SetColor(Pieces::PiecesColor color) { m_color = color; }
-    //void PlacePiece(Pieces* pieces);
-    void PlacePiece(int row, int col, Pieces::PiecesColor color);
 
     void Clear();
+    void PlacePiece(int row, int col, Pieces::PiecesColor color);
+    void ShowHint();
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
@@ -36,7 +37,19 @@ private:
     bool m_is_block;
     int m_round;
 
+    QTimer m_bomb_timer;
+    bool m_bomb[Const::SIZE + 1][Const::SIZE + 1];
+
+    bool isOnBoard(int x, int y)
+    {
+        return 0 <= x && x <= Const::SIZE && 0 <= y && y <= Const::SIZE;
+    }
+    bool isAvailable(int x, int y)
+    {
+        return isOnBoard(x, y) && m_board[x][y].Color() == Pieces::Transpraent;
+    }
     bool checkWin(int row, int col, int color);
+    bool hasBomb(int x, int y);
 
 signals:
     void gameOver();
