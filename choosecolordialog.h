@@ -2,6 +2,7 @@
 #define CHOOSECOLORDIALOG_H
 
 #include "const.h"
+#include "connection.h"
 
 #include <QDialog>
 #include <QTcpSocket>
@@ -16,16 +17,22 @@ class ChooseColorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ChooseColorDialog(const QString& username, Const::NetworkIdentity type, QTcpSocket* socket, QWidget *parent = 0);
+    explicit ChooseColorDialog(const QString& username, Const::HostType type, QWidget *parent = 0);
     ~ChooseColorDialog();
 
-    Const::NetworkIdentity FirstPlayer() const { return m_first_palyer; }
+    Const::HostType FirstPlayer() const { return m_first_palyer; }
+    QString OpponentUsername() const { return m_opp_username; }
+    bool IsDisconnected() const { return m_is_disconnected; }
+
+public slots:
+    void onUpdateState(bool isAccepted, int state0, int state1, const QString& oppUsername);
+    void onDisconnected();
 
 private:
     Ui::ChooseColorDialog *ui;
-    QString m_username;
-    Const::NetworkIdentity m_type, m_first_palyer;
-    QTcpSocket* m_socket;
+    QString m_username, m_opp_username;
+    Const::HostType m_type, m_first_palyer;
+    bool m_is_disconnected;
     int m_state[2];
 
     void drawIcon();
@@ -35,9 +42,10 @@ private:
 private slots:
     void on_pushButton_first_clicked(bool checked);
     void on_pushButton_second_clicked(bool checked);
-
-    void onReceivedData();
     void on_pushButton_start_clicked();
+
+signals:
+    void prepareStateChanged(bool isAccepted, int state0, int state1, const QString& username);
 };
 
 #endif // CHOOSECOLORDIALOG_H

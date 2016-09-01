@@ -19,7 +19,10 @@ SOURCES += main.cpp\
     pieces.cpp \
     connectdialog.cpp \
     player.cpp \
-    choosecolordialog.cpp
+    choosecolordialog.cpp \
+    connection.cpp \
+    server.cpp \
+    connectionthread.cpp
 
 HEADERS  += mainwindow.h \
     board.h \
@@ -27,7 +30,10 @@ HEADERS  += mainwindow.h \
     pieces.h \
     connectdialog.h \
     player.h \
-    choosecolordialog.h
+    choosecolordialog.h \
+    connection.h \
+    server.h \
+    connectionthread.h
 
 FORMS    += mainwindow.ui \
     connectdialog.ui \

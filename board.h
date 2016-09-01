@@ -20,7 +20,7 @@ public:
     //void PlacePiece(Pieces* pieces);
     void PlacePiece(int row, int col, Pieces::PiecesColor color);
 
-    void Restart();
+    void Clear();
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
@@ -39,7 +39,7 @@ private:
     bool checkWin(int row, int col, int color);
 
 signals:
-    void restart();
+    void gameOver();
     void piecePlaced(int row, int col, Pieces::PiecesColor color);
 };
 

@@ -18,10 +18,10 @@ public:
     explicit ConnectDialog(QWidget *parent = nullptr);
     ~ConnectDialog();
 
-    Const::NetworkIdentity Type() const { return m_type; }
+    Const::HostType Type() const { return m_type; }
     QString Ip() const { return m_ip; }
     int Port() const { return m_port; }
-    QString Username() const { return m_user; }
+    QString Username() const { return m_username; }
 
 private slots:
     void on_lineEdit_0_textChanged(const QString &arg1);
@@ -35,8 +35,8 @@ private slots:
 
 private:
     Ui::ConnectDialog *ui;
-    Const::NetworkIdentity m_type;
-    QString m_local_ip, m_ip, m_user;
+    Const::HostType m_type;
+    QString m_ip, m_username;
     int m_port;
 
 };

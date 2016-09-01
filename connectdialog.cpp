@@ -2,8 +2,8 @@
 #include "ui_connectdialog.h"
 
 #include <QDebug>
+#include <QTcpServer>
 #include <QMessageBox>
-#include <QNetworkInterface>
 
 ConnectDialog::ConnectDialog(QWidget *parent) :
     QDialog(parent),
@@ -21,14 +21,6 @@ ConnectDialog::ConnectDialog(QWidget *parent) :
     ui->lineEdit_port->setText("2333");
     ui->lineEdit_port->setValidator(new QIntValidator(0, 65536, this));
     this->setFixedSize(this->sizeHint());
-
-    auto list = QNetworkInterface::allAddresses();
-    for (auto i : list)
-        if (i != QHostAddress::LocalHost && i.protocol() == QAbstractSocket::IPv4Protocol)
-        {
-            m_local_ip = i.toString();
-            break;
-        }
 
     on_radioButton_server_clicked();
     ui->lineEdit_user->setFocus();
@@ -82,7 +74,7 @@ void ConnectDialog::on_radioButton_server_clicked()
     ui->label->setText(tr("Host &IP:"));
     ui->pushButton_create->setText(tr("&Create"));
 
-    QStringList ip = m_local_ip.split('.');
+    QStringList ip = Const::GetLocalIp().split('.');
     ui->lineEdit_0->setText(ip[0]);
     ui->lineEdit_1->setText(ip[1]);
     ui->lineEdit_2->setText(ip[2]);
@@ -124,6 +116,16 @@ void ConnectDialog::on_pushButton_create_clicked()
                                  .arg(ui->lineEdit_2->text())
                                  .arg(ui->lineEdit_3->text());
     m_port = ui->lineEdit_port->text().toInt();
-    m_user = ui->lineEdit_user->text();
+    m_username = ui->lineEdit_user->text();
+    if (m_type == Const::Server)
+    {
+        QTcpServer server;
+        if (!server.listen(QHostAddress(m_ip), m_port))
+        {
+            QMessageBox::critical(this, tr("Create Server Failed"), QString(tr("Cannot listen the port %1.")).arg(m_port));
+            ui->lineEdit_port->setFocus();
+            return;
+        }
+    }
     this->accept();
 }

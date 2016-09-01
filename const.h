@@ -2,11 +2,12 @@
 #define CONST_H
 
 #include <QColor>
+#include <QNetworkInterface>
 
 namespace Const
 {
 
-enum NetworkIdentity
+enum HostType
 {
     Server,
     Client
@@ -30,6 +31,16 @@ const QColor PIECES_COLOR[3] =
 };
 
 inline double Sqr(double x) { return x * x; }
+
+inline QString GetLocalIp()
+{
+    auto list = QNetworkInterface::allAddresses();
+    for (auto i : list)
+        if (i != QHostAddress::LocalHost && i.protocol() == QAbstractSocket::IPv4Protocol)
+            return i.toString();
+    return "";
+}
+
 
 }
 

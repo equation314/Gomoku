@@ -27,6 +27,7 @@ void Board::paintEvent(QPaintEvent* event)
     QWidget::paintEvent(event);
 
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
     painter.translate(m_center);
     int halfSize = Const::SIZE / 2;
     double halfWidth = Const::SIZE * m_cell_width / 2;
@@ -120,28 +121,23 @@ bool Board::checkWin(int row, int col, int color)
     for (int i = 0, j; i <= Const::SIZE; i = j + 1)
     {
         for (j = i; j <= Const::SIZE && m_board[j][col].Color() == color; j++);
-        qDebug()<<i<<' '<<j;
         if (j - i >= 5) return true;
     }
-    qDebug()<<"1";
     for (int i = 0, j; i <= Const::SIZE; i = j + 1)
     {
         for (j = i; j <= Const::SIZE && m_board[row][j].Color() == color; j++);
         if (j - i >= 5) return true;
     }
-    qDebug()<<"2";
     for (int i = 0, j, k; i <= Const::SIZE; i = j + 1)
     {
         for (j = i; k = j - row + col, 0 <= k && k <= Const::SIZE && m_board[j][k].Color() == color; j++);
         if (j - i >= 5) return true;
     }
-    qDebug()<<"3";
     for (int i = 0, j, k; i <= Const::SIZE; i = j + 1)
     {
         for (j = i; k = row + col - j, 0 <= k && k <= Const::SIZE && m_board[j][k].Color() == color; j++);
         if (j - i >= 5) return true;
     }
-    qDebug()<<"4";
     return false;
 }
 
@@ -152,21 +148,19 @@ void Board::PlacePiece(int row, int col, Pieces::PiecesColor color)
     if (checkWin(row, col, color))
     {
         if (color == m_color)
-            QMessageBox::information(this, tr("Congratulation!"), tr("You win the game :-)"));
+            QMessageBox::information(this, tr("WIN!"), tr("Congratulation! You win the game :-)"));
         else
-            QMessageBox::information(this, tr("Game Over"), tr("You lose the game :-("));
-        emit restart();
-        Restart();
+            QMessageBox::information(this, tr("LOSE"), tr("You lose the game :-("));
+        emit gameOver();
     }
     else if (m_round == Const::SIZE * Const::SIZE)
     {
         QMessageBox::information(this, tr("Draw"), tr("2333333333..."));
-        emit restart();
-        Restart();
+        emit gameOver();
     }
 }
 
-void Board::Restart()
+void Board::Clear()
 {
     m_round = 0;
     for (int i = 0 ; i <= Const::SIZE; i++)
