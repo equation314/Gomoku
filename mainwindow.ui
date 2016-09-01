@@ -13,6 +13,12 @@
   <property name="windowTitle">
    <string>Gomoku</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget
+{
+	font-family: &quot;微软雅黑&quot;;
+}</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="1">

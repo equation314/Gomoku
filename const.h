@@ -2,7 +2,7 @@
 #define CONST_H
 
 #include <QColor>
-#include <QNetworkInterface>
+#include <QHostInfo>
 
 namespace Const
 {
@@ -34,13 +34,12 @@ inline double Sqr(double x) { return x * x; }
 
 inline QString GetLocalIp()
 {
-    auto list = QNetworkInterface::allAddresses();
+    auto list = QHostInfo::fromName(QHostInfo::localHostName()).addresses();
     for (auto i : list)
         if (i != QHostAddress::LocalHost && i.protocol() == QAbstractSocket::IPv4Protocol)
             return i.toString();
     return "";
 }
-
 
 }
 

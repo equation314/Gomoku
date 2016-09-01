@@ -163,7 +163,7 @@ bool Board::hasBomb(int x, int y)
     Pieces::PiecesColor oppColor = m_color == Pieces::Black ? Pieces::White : Pieces::Black;
     m_board[x][y].SetColor(oppColor);
 
-    int n3 = 0, n4 = 0;
+    int n3 = 0, n4 = 0, n5 = 0;
     for (int i = 0; i < Const::SIZE; i++)
         for (int j = 0; j < Const::SIZE; j++)
             if (m_board[i][j].Color() == oppColor)
@@ -171,11 +171,12 @@ bool Board::hasBomb(int x, int y)
                 for (int d = 0; d < 4; d++)
                 {
                     int ii = i, jj = j, k;
-                    for (k = 0; k < 4 && isOnBoard(ii, jj) && m_board[ii][jj].Color() == oppColor; k++, ii += dir[d][0], jj += dir[d][1]);
+                    for (k = 0; k < 5 && isOnBoard(ii, jj) && m_board[ii][jj].Color() == oppColor; k++, ii += dir[d][0], jj += dir[d][1]);
                     if (k == 3 &&  isAvailable(ii, jj) && isAvailable(i - dir[d][0], j - dir[d][1]))  n3++;
                     if (k == 4 && (isAvailable(ii, jj) || isAvailable(i - dir[d][0], j - dir[d][1]))) n4++;
+                    if (k == 5) n5++;
 
-                    if (n3 >= 2 || (n3 && n4))
+                    if (n3 >= 2 || (n3 && n4) || n5)
                     {
                         m_board[x][y].SetColor(Pieces::Transpraent);
                         return true;
