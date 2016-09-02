@@ -14,7 +14,7 @@
    <string>Gomoku</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resource/icon.qrc">
+   <iconset resource="../resource/icon.qrc">
     <normaloff>:/icon/gomoku.ico</normaloff>:/icon/gomoku.ico</iconset>
   </property>
   <property name="styleSheet">
@@ -414,7 +414,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="resource/icon.qrc"/>
+  <include location="../resource/icon.qrc"/>
  </resources>
  <connections/>
 </ui>

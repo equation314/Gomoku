@@ -37,6 +37,7 @@ DialPadDialog::DialPadDialog(QWidget *parent) :
 
     m_clear = new QPushButton(tr("Clear"), this);
     m_clear->setFixedSize(48, 48);
+    m_clear->setShortcut(Qt::Key_C);
     m_clear->setAutoDefault(false);
     ui->gridLayout->addWidget(m_clear, 3, 2);
     signalMap->setMapping(m_clear, -2);

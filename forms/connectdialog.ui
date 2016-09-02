@@ -20,7 +20,7 @@
    <string>Choose Host Type</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resource/icon.qrc">
+   <iconset resource="../resource/icon.qrc">
     <normaloff>:/icon/gomoku.ico</normaloff>:/icon/gomoku.ico</iconset>
   </property>
   <property name="styleSheet">
@@ -100,9 +100,6 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -304,7 +301,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="resource/icon.qrc"/>
+  <include location="../resource/icon.qrc"/>
  </resources>
  <connections>
   <connection>

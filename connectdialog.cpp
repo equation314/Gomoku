@@ -37,7 +37,7 @@ ConnectDialog::~ConnectDialog()
 void ConnectDialog::onDialPadNumClicked(int n)
 {
     QLineEdit* lineEdit = static_cast<QLineEdit*>(this->focusWidget());
-    if (lineEdit && lineEdit->inherits("QLineEdit") && !lineEdit->isReadOnly())
+    if (lineEdit && lineEdit->inherits("QLineEdit"))
     {
         if (n >= 0)
             lineEdit->insert(QString::number(n));
@@ -51,7 +51,7 @@ void ConnectDialog::onDialPadNumClicked(int n)
 
 void ConnectDialog::on_lineEdit_0_textChanged(const QString &arg1)
 {
-    if (!ui->lineEdit_0->isReadOnly() && arg1.toInt() > 25)
+    if (arg1.toInt() > 25)
     {
         ui->lineEdit_1->setFocus();
         ui->lineEdit_1->selectAll();
@@ -60,7 +60,7 @@ void ConnectDialog::on_lineEdit_0_textChanged(const QString &arg1)
 
 void ConnectDialog::on_lineEdit_1_textChanged(const QString &arg1)
 {
-    if (!ui->lineEdit_0->isReadOnly() && arg1.toInt() > 25)
+    if (arg1.toInt() > 25)
     {
         ui->lineEdit_2->setFocus();
         ui->lineEdit_2->selectAll();
@@ -69,7 +69,7 @@ void ConnectDialog::on_lineEdit_1_textChanged(const QString &arg1)
 
 void ConnectDialog::on_lineEdit_2_textChanged(const QString &arg1)
 {
-    if (!ui->lineEdit_0->isReadOnly() && arg1.toInt() > 25)
+    if (arg1.toInt() > 25)
     {
         ui->lineEdit_3->setFocus();
         ui->lineEdit_3->selectAll();
@@ -78,7 +78,7 @@ void ConnectDialog::on_lineEdit_2_textChanged(const QString &arg1)
 
 void ConnectDialog::on_lineEdit_3_textChanged(const QString &arg1)
 {
-    if (!ui->lineEdit_0->isReadOnly() && arg1.toInt() > 25)
+    if (arg1.toInt() > 25)
     {
         ui->lineEdit_port->setFocus();
         ui->lineEdit_port->selectAll();
@@ -97,10 +97,6 @@ void ConnectDialog::on_radioButton_server_clicked()
     ui->lineEdit_1->setText(ip[1]);
     ui->lineEdit_2->setText(ip[2]);
     ui->lineEdit_3->setText(ip[3]);
-    ui->lineEdit_0->setReadOnly(true);
-    ui->lineEdit_1->setReadOnly(true);
-    ui->lineEdit_2->setReadOnly(true);
-    ui->lineEdit_3->setReadOnly(true);
 
     ui->lineEdit_port->setFocus();
     ui->lineEdit_port->selectAll();
@@ -112,10 +108,6 @@ void ConnectDialog::on_radioButton_client_clicked()
     this->setWindowTitle(tr("Connect to Server"));
     ui->label->setText(tr("Server &IP:"));
     ui->pushButton_create->setText(tr("&Connect"));
-    ui->lineEdit_0->setReadOnly(false);
-    ui->lineEdit_1->setReadOnly(false);
-    ui->lineEdit_2->setReadOnly(false);
-    ui->lineEdit_3->setReadOnly(false);
 
     ui->lineEdit_0->setFocus();
     ui->lineEdit_0->selectAll();
@@ -140,7 +132,7 @@ void ConnectDialog::on_pushButton_create_clicked()
         QTcpServer server;
         if (!server.listen(QHostAddress(m_ip), m_port))
         {
-            QMessageBox::critical(this, tr("Create Server Failed"), QString(tr("Cannot listen the port %1.")).arg(m_port));
+            QMessageBox::critical(this, tr("Create Server Failed"), QString(tr("Cannot create the server at %1:%2")).arg(m_ip).arg(m_port));
             ui->lineEdit_port->setFocus();
             return;
         }
