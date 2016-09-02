@@ -32,6 +32,9 @@ signals:
     void gameStartReceived();
     void prepareStateReceived(bool isAccepted, int state0, int state1, const QString& username);
     void moveReceived(int row, int col, Pieces::PiecesColor color);
+    void opponentBackRequest();
+    void backAllowed();
+    void backDisallowed();
     void opponentThrowRecived();
 };
 

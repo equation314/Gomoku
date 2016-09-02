@@ -1,3 +1,4 @@
+#include "waitdialog.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "connectdialog.h"
@@ -51,26 +52,6 @@ void MainWindow::setBlock(bool isBlock)
     m_is_block = isBlock;
     ui->board->SetBlock(isBlock);
     ui->pushButton_hint->setEnabled(!isBlock);
-    ui->pushButton_back->setEnabled(!isBlock);
-}
-
-void MainWindow::createServerConnection(ConnectionThread* thread)
-{
-    qDebug()<<"New Connection";
-    if (m_is_connected) return;
-    m_is_connected = true;
-    m_thread = thread;
-    m_thread->SetGreetingMessage(m_username);
-    connect(m_thread, &ConnectionThread::connectionReady, this, &MainWindow::onConnectionReady);
-    m_thread->start();
-}
-
-void MainWindow::createClientConnection()
-{
-    m_thread = new ConnectionThread(m_type, m_ip, m_port, this);
-    m_thread->SetGreetingMessage(m_username);
-    connect(m_thread, &ConnectionThread::connectionReady, this, &MainWindow::onConnectionReady);
-    m_thread->start();
 }
 
 void MainWindow::initialize()
@@ -100,6 +81,33 @@ void MainWindow::initialize()
     }
 }
 
+void MainWindow::createServerConnection(ConnectionThread* thread)
+{
+    qDebug()<<"New Connection";
+    if (m_is_connected) return;
+    m_is_connected = true;
+    m_thread = thread;
+    m_thread->SetGreetingMessage(m_username);
+    connect(m_thread, &ConnectionThread::connectionReady, this, &MainWindow::onConnectionReady);
+    m_thread->start();
+}
+
+void MainWindow::createClientConnection()
+{
+    m_thread = new ConnectionThread(m_type, m_ip, m_port, this);
+    m_thread->SetGreetingMessage(m_username);
+    connect(m_thread, &ConnectionThread::connectionReady, this, &MainWindow::onConnectionReady);
+    m_thread->start();
+}
+
+void MainWindow::nextMove()
+{
+    if (m_is_block)
+        onOpponentMove(-1, -1, Pieces::Transpraent);
+    else
+        onMyMove(-1, -1, Pieces::Transpraent);
+}
+
 
 
 void MainWindow::onConnectionReady(const QString& oppUsername)
@@ -110,6 +118,7 @@ void MainWindow::onConnectionReady(const QString& oppUsername)
     connect(this, &MainWindow::disconnected, m_connection, &Connection::close);
     connect(m_connection, &Connection::gameStartReceived, this, &MainWindow::onChooseColor);
     connect(m_connection, &Connection::moveReceived, this, &MainWindow::onOpponentMove);
+    connect(m_connection, &Connection::opponentBackRequest, this, &MainWindow::onOpponentBackRequest);
     connect(m_connection, &Connection::opponentThrowRecived, this, &MainWindow::onOpponentThrow);
     connect(m_connection, &QTcpSocket::disconnected, this, &MainWindow::onDisConnected);
 
@@ -123,7 +132,7 @@ void MainWindow::onConnectionReady(const QString& oppUsername)
         ui->groupBox_player_2->setTitle(oppUsername);
         ui->label_ip2->setText(QString("%1:%2").arg(m_connection->peerAddress().toString()).arg(m_connection->peerPort()));
         ui->pushButton_start->setEnabled(true);
-        ui->label_info->setText(tr("Press the start button to start a new game"));
+        ui->label_info->setText(tr("Press the start button to start a new game."));
     }
     else if (m_type == Const::Client)
     {
@@ -146,10 +155,13 @@ void MainWindow::onDisConnected()
     ui->label_status->setText("Disconnected");
     ui->label_status->setStyleSheet("color:red;");
     ui->pushButton_disconnnect->setEnabled(false);
+    m_thread->deleteLater();
     if (m_is_closing) return;
     qDebug()<<"DisConnected";
-    m_thread->deleteLater();
-    QMessageBox::information(this, tr("Disconnected"), tr("Connection has been disconnected!"));
+
+    QString info = tr("Connection has been disconnected!");
+    if (m_type == Const::Client) info += tr(" The game will restart.");
+    QMessageBox::information(this, tr("Disconnected"), info);
     if (m_type == Const::Server) initialize();
     else if (m_type == Const::Client) qApp->exit(233);
 }
@@ -162,7 +174,7 @@ void MainWindow::onGameStartPrepare()
     if (m_type == Const::Server)
     {
         ui->pushButton_start->setEnabled(true);
-        ui->label_info->setText(tr("Press the start button to start a new game"));
+        ui->label_info->setText(tr("Press the start button to start a new game."));
     }
     else if (m_type == Const::Client)
         ui->label_info->setText(tr("Waiting for the server to start..."));
@@ -190,7 +202,7 @@ void MainWindow::onChooseColor()
     {
         setBlock(false);
         m_player = new Player(Pieces::Black);
-        ui->label_info->setText(tr("Please select a position to place the pieces"));
+        ui->label_info->setText(tr("Please select a position to place the pieces."));
     }
     else
     {
@@ -221,17 +233,32 @@ void MainWindow::onChooseColor()
 void MainWindow::onOpponentMove(int row, int col, Pieces::PiecesColor color)
 {
     m_is_choosing_color = false;
-    ui->label_info->setText(tr("Please select a position to place the pieces"));
-    setBlock(false);
+    ui->label_info->setText(tr("Please select a position to place the pieces."));
     ui->board->PlacePiece(row, col, (Pieces::PiecesColor)color);
+    setBlock(false);
 }
 
 void MainWindow::onMyMove(int row, int col, Pieces::PiecesColor color)
 {
     m_is_choosing_color = false;
+    ui->pushButton_back->setEnabled(ui->board->MyPieces());
     ui->label_info->setText(tr("Waiting for the opponent to place..."));
     setBlock(true);
     emit moveSent(row, col, color);
+}
+
+void MainWindow::onOpponentBackRequest()
+{
+    int backStep = m_is_block ? 2 : 1;
+    if (QMessageBox::question(this, tr("Back Request"), QString(tr("Do you allow the opponent to move back before %1 step%2?")).arg(backStep).arg(backStep == 1 ? "" : "s")) == QMessageBox::Yes)
+    {
+        emit messageSent("allowback");
+        ui->board->BackMove(backStep);
+        ui->pushButton_back->setEnabled(ui->board->MyPieces());
+        if (backStep == 1) nextMove();
+    }
+    else
+        emit messageSent("disallowback");
 }
 
 void MainWindow::onOpponentThrow()
@@ -239,25 +266,6 @@ void MainWindow::onOpponentThrow()
     m_is_choosing_color = false;
     QMessageBox::information(this, tr("WIN"), tr("The opponent throw the game :-)"));
     onGameStartPrepare();
-}
-
-void MainWindow::onMyThrow()
-{
-    m_is_choosing_color = false;
-    emit messageSent("throw");
-    QMessageBox::information(this, tr("LOSE"), tr("You throw the game :-("));
-    onGameStartPrepare();
-}
-
-void MainWindow::on_pushButton_throw_clicked()
-{
-    if (QMessageBox::question(this, tr("Throw Game"), tr("Do you really want to throw the game?")) == QMessageBox::Yes)
-        onMyThrow();
-}
-
-void MainWindow::on_pushButton_disconnnect_clicked()
-{
-    emit disconnected();
 }
 
 void MainWindow::on_pushButton_start_clicked()
@@ -272,4 +280,38 @@ void MainWindow::on_pushButton_start_clicked()
 void MainWindow::on_pushButton_hint_clicked()
 {
     ui->board->ShowHint();
+}
+
+void MainWindow::on_pushButton_back_clicked()
+{
+    int backStep = m_is_block ? 1 : 2;
+    if (QMessageBox::question(this, tr("Back Move"), QString(tr("Do you want to move back before %1 step%2?")).arg(backStep).arg(backStep == 1 ? "" : "s")) == QMessageBox::Yes)
+    {
+        emit messageSent("back");
+        WaitDialog dialog;
+        connect(m_connection, &Connection::backAllowed, &dialog, &WaitDialog::onBackAllowed);
+        connect(m_connection, &Connection::backDisallowed, &dialog, &WaitDialog::onBackDisallowed);
+        connect(&dialog, &WaitDialog::backAllowed, this, [&, this]()
+        {
+            ui->board->BackMove(backStep);
+            ui->pushButton_back->setEnabled(ui->board->MyPieces());
+        });
+        dialog.exec();
+    }
+}
+
+void MainWindow::on_pushButton_throw_clicked()
+{
+    if (QMessageBox::question(this, tr("Throw Game"), tr("Do you really want to throw the game?")) == QMessageBox::Yes)
+    {
+        m_is_choosing_color = false;
+        emit messageSent("throw");
+        QMessageBox::information(this, tr("LOSE"), tr("You throw the game :-("));
+        onGameStartPrepare();
+    }
+}
+
+void MainWindow::on_pushButton_disconnnect_clicked()
+{
+    emit disconnected();
 }

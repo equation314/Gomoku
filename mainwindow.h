@@ -43,6 +43,7 @@ private:
     void initialize();
     void createServerConnection(ConnectionThread *thread);
     void createClientConnection();
+    void nextMove();
 
 private slots:
     void onConnectionReady(const QString& oppUsername);
@@ -53,14 +54,14 @@ private slots:
     void onGameStartPrepare();
     void onMyMove(int row, int col, Pieces::PiecesColor color);
     void onOpponentMove(int row, int col, Pieces::PiecesColor color);
-    void onMyThrow();
+    void onOpponentBackRequest();
     void onOpponentThrow();
 
-    void on_pushButton_disconnnect_clicked();
-    void on_pushButton_throw_clicked();
     void on_pushButton_start_clicked();
-
     void on_pushButton_hint_clicked();
+    void on_pushButton_back_clicked();
+    void on_pushButton_throw_clicked();
+    void on_pushButton_disconnnect_clicked();
 
 signals:
     void disconnected();

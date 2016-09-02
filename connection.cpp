@@ -86,6 +86,12 @@ void Connection::onReceivedData()
             qDebug()<<message;
             if (message == "start")
                 emit gameStartReceived();
+            else if (message == "back")
+                emit opponentBackRequest();
+            else if (message == "allowback")
+                emit backAllowed();
+            else if (message == "disallowback")
+                emit backDisallowed();
             else if (message == "throw")
                 emit opponentThrowRecived();
         }

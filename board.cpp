@@ -10,7 +10,7 @@ using namespace std;
 
 Board::Board(QWidget* parent) :
     QWidget(parent),
-    m_is_block(true), m_round(0)
+    m_is_block(true), m_round(0), m_my_pieces(0)
 {
     this->setMouseTracking(true);
     for (int i = 0; i <= Const::SIZE; i++)
@@ -122,6 +122,7 @@ void Board::mousePressEvent(QMouseEvent* event)
                 if (Const::Sqr(center.x() - event->x()) + Const::Sqr(center.y() - event->y()) >= r * r) continue;
                 if (event->button() == Qt::LeftButton)
                 {
+                    m_my_pieces++;
                     emit piecePlaced(i, j, m_color);
                     PlacePiece(i, j, m_color);
                     return;
@@ -189,7 +190,7 @@ bool Board::hasBomb(int x, int y)
 
 void Board::Clear()
 {
-    m_round = 0;
+    m_round = 0, m_my_pieces = 0;
     for (int i = 0 ; i <= Const::SIZE; i++)
         for (int j = 0 ; j <= Const::SIZE; j++) m_board[i][j] = Pieces();
     this->update();
@@ -197,7 +198,9 @@ void Board::Clear()
 
 void Board::PlacePiece(int row, int col, Pieces::PiecesColor color)
 {
+    if (row < 0 || col < 0 || color == Pieces::Transpraent) return;
     m_board[row][col] = Pieces(row, col, color, ++m_round);
+    m_stack.push(m_board[row][col]);
     this->update();
     if (checkWin(row, col, color))
     {
@@ -212,6 +215,21 @@ void Board::PlacePiece(int row, int col, Pieces::PiecesColor color)
         QMessageBox::information(this, tr("DRAW"), tr("2333333333..."));
         emit gameOver();
     }
+}
+
+void Board::BackMove(int round)
+{
+    for (int i = 0; i < round && m_stack.size(); i++)
+    {
+        Pieces pieces = m_stack.top();
+        qDebug()<<i<<' '<<pieces.Row()<<' '<<pieces.Column()<<' '<<pieces.Color();
+        m_board[pieces.Row()][pieces.Column()].SetState(Pieces::None);
+        m_board[pieces.Row()][pieces.Column()].SetColor(Pieces::Transpraent);
+        m_stack.pop();
+        m_round--;
+        if (pieces.Color() == m_color) m_my_pieces--;
+    }
+    this->update();
 }
 
 void Board::ShowHint()

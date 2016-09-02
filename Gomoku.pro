@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     connection.cpp \
     server.cpp \
     connectionthread.cpp \
-    dialpaddialog.cpp
+    dialpaddialog.cpp \
+    waitdialog.cpp
 
 HEADERS  += mainwindow.h \
     board.h \
@@ -35,12 +36,14 @@ HEADERS  += mainwindow.h \
     connection.h \
     server.h \
     connectionthread.h \
-    dialpaddialog.h
+    dialpaddialog.h \
+    waitdialog.h
 
 FORMS    += forms/mainwindow.ui \
     forms/connectdialog.ui \
     forms/choosecolordialog.ui \
-    forms/dialpaddialog.ui
+    forms/dialpaddialog.ui \
+    forms/waitdialog.ui
 
 RESOURCES += \
     resource/icon.qrc

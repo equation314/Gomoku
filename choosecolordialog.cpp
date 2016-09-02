@@ -48,7 +48,7 @@ void ChooseColorDialog::changeInfo()
         {
             ui->pushButton_start->setEnabled(true);
             ui->pushButton_start->setFocus();
-            ui->label_info->setText(tr("Press the start button to start"));
+            ui->label_info->setText(tr("Press the start button to start."));
         }
         else
             ui->label_info->setText(tr("Waiting for the server to start..."));
@@ -57,7 +57,7 @@ void ChooseColorDialog::changeInfo()
     {
         ui->pushButton_start->setEnabled(false);
         if (m_state[0] != (int)m_type && m_state[1] != (int)m_type)
-            ui->label_info->setText(tr("Please choose one color"));
+            ui->label_info->setText(tr("Please choose one color."));
         else
             ui->label_info->setText(tr("Waiting for the opponent to choose..."));
     }

@@ -7,6 +7,7 @@
 #include <QPoint>
 #include <QTimer>
 #include <QWidget>
+#include <QStack>
 
 class Board : public QWidget
 {
@@ -15,12 +16,16 @@ class Board : public QWidget
 public:
     Board(QWidget* parent = nullptr);
 
+    // Getter member functions
+    int MyPieces() const { return m_my_pieces; }
+
     // Setter member functions
     void SetBlock(bool isBlock) { m_is_block = isBlock; }
     void SetColor(Pieces::PiecesColor color) { m_color = color; }
 
     void Clear();
     void PlacePiece(int row, int col, Pieces::PiecesColor color);
+    void BackMove(int round);
     void ShowHint();
 
 protected:
@@ -35,10 +40,14 @@ private:
     Pieces::PiecesColor m_color;
     double m_cell_width;
     bool m_is_block;
-    int m_round;
+    int m_round, m_my_pieces;
 
+    // for hint
     QTimer m_bomb_timer;
     bool m_bomb[Const::SIZE + 1][Const::SIZE + 1];
+
+    // for back
+    QStack<Pieces> m_stack;
 
     bool isOnBoard(int x, int y)
     {
