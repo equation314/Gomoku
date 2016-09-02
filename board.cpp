@@ -17,7 +17,6 @@ Board::Board(QWidget* parent) :
         for (int j = 0; j <= Const::SIZE; j++) m_bomb[i][j] = 0;
     connect(&m_bomb_timer, &QTimer::timeout, this, [this]()
     {
-        qDebug()<<"fuck";
         for (int i = 0; i <= Const::SIZE; i++)
             for (int j = 0; j <= Const::SIZE; j++) m_bomb[i][j] = 0;
         this->update();
@@ -36,8 +35,8 @@ void Board::paintEvent(QPaintEvent* event)
     QWidget::paintEvent(event);
 
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
     painter.translate(m_center);
     int halfSize = Const::SIZE / 2;
     double halfWidth = Const::SIZE * m_cell_width / 2;
@@ -47,7 +46,7 @@ void Board::paintEvent(QPaintEvent* event)
     pen.setWidth(2);
     pen.setJoinStyle(Qt::MiterJoin);
     painter.setPen(pen);
-    painter.setBrush(QColor(255, 255, 128));
+    painter.setBrush(QColor(255, 255, 170));
     painter.drawRect(-frameWidth / 2, -frameWidth / 2, frameWidth, frameWidth);
 
     painter.setPen(Qt::black);
@@ -163,7 +162,7 @@ bool Board::hasBomb(int x, int y)
     Pieces::PiecesColor oppColor = m_color == Pieces::Black ? Pieces::White : Pieces::Black;
     m_board[x][y].SetColor(oppColor);
 
-    int n3 = 0, n4 = 0, n5 = 0;
+    int n3 = 0, n4 = 0, n4_ = 0, n5 = 0;
     for (int i = 0; i < Const::SIZE; i++)
         for (int j = 0; j < Const::SIZE; j++)
             if (m_board[i][j].Color() == oppColor)
@@ -173,10 +172,11 @@ bool Board::hasBomb(int x, int y)
                     int ii = i, jj = j, k;
                     for (k = 0; k < 5 && isOnBoard(ii, jj) && m_board[ii][jj].Color() == oppColor; k++, ii += dir[d][0], jj += dir[d][1]);
                     if (k == 3 &&  isAvailable(ii, jj) && isAvailable(i - dir[d][0], j - dir[d][1]))  n3++;
+                    if (k == 4 &&  isAvailable(ii, jj) && isAvailable(i - dir[d][0], j - dir[d][1])) n4_++;
                     if (k == 4 && (isAvailable(ii, jj) || isAvailable(i - dir[d][0], j - dir[d][1]))) n4++;
                     if (k == 5) n5++;
 
-                    if (n3 >= 2 || (n3 && n4) || n5)
+                    if (n3 >= 2 || (n3 && n4) || n4_ || n5)
                     {
                         m_board[x][y].SetColor(Pieces::Transpraent);
                         return true;
@@ -209,7 +209,7 @@ void Board::PlacePiece(int row, int col, Pieces::PiecesColor color)
     }
     else if (m_round == Const::SIZE * Const::SIZE)
     {
-        QMessageBox::information(this, tr("Draw"), tr("2333333333..."));
+        QMessageBox::information(this, tr("DRAW"), tr("2333333333..."));
         emit gameOver();
     }
 }
@@ -218,7 +218,6 @@ void Board::ShowHint()
 {
     m_bomb_timer.setSingleShot(true);
     m_bomb_timer.start(2000);
-    qDebug()<<m_bomb_timer.isActive();
     for (int i = 0; i <= Const::SIZE; i++)
         for (int j = 0; j <= Const::SIZE; j++)
             m_bomb[i][j] = hasBomb(i, j);

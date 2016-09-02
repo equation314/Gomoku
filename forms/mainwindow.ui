@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Gomoku</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource/icon.qrc">
+    <normaloff>:/icon/gomoku.ico</normaloff>:/icon/gomoku.ico</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">QWidget
 {
@@ -409,6 +413,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resource/icon.qrc"/>
+ </resources>
  <connections/>
 </ui>

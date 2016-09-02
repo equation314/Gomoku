@@ -17,7 +17,11 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Choose Identity</string>
+   <string>Choose Host Type</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resource/icon.qrc">
+    <normaloff>:/icon/gomoku.ico</normaloff>:/icon/gomoku.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget
@@ -299,7 +303,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource/icon.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>pushButton_cancel</sender>

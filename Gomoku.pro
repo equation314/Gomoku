@@ -37,10 +37,13 @@ HEADERS  += mainwindow.h \
     connectionthread.h \
     dialpaddialog.h
 
-FORMS    += mainwindow.ui \
-    connectdialog.ui \
-    choosecolordialog.ui \
-    dialpaddialog.ui
+FORMS    += forms/mainwindow.ui \
+    forms/connectdialog.ui \
+    forms/choosecolordialog.ui \
+    forms/dialpaddialog.ui
 
 RESOURCES += \
     resource/icon.qrc
+
+RC_FILE += \
+    resource/icon.rc

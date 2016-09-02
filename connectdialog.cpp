@@ -157,6 +157,7 @@ void ConnectDialog::on_pushButton_dial_pad_clicked()
     connect(m_dialog, &DialPadDialog::rejected, this, [this]()
     {
         ui->pushButton_dial_pad->setEnabled(true);
+        m_dialog->deleteLater();
     });
     m_dialog->show();
 }

@@ -28,6 +28,7 @@ void ConnectionThread::run()
     m_connection = new Connection;
     m_connection->SetGreetingMessage(m_greeting_massage);
     connect(m_connection, &Connection::connectionReady, this, &ConnectionThread::connectionReady);
+    connect(m_connection, &Connection::disconnected, this, &QThread::quit);
 
     if (m_type == Const::Server)
     {
