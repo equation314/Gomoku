@@ -204,16 +204,16 @@ void Board::PlacePiece(int row, int col, Pieces::PiecesColor color)
     this->update();
     if (checkWin(row, col, color))
     {
+        emit gameOver();
         if (color == m_color)
             QMessageBox::information(this, tr("WIN!"), tr("Congratulation! You win the game :-)"));
         else
             QMessageBox::information(this, tr("LOSE"), tr("You lose the game :-("));
-        emit gameOver();
     }
     else if (m_round == Const::SIZE * Const::SIZE)
     {
-        QMessageBox::information(this, tr("DRAW"), tr("2333333333..."));
         emit gameOver();
+        QMessageBox::information(this, tr("DRAW"), tr("2333333333..."));
     }
 }
 

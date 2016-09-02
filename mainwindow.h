@@ -6,6 +6,7 @@
 #include "server.h"
 #include "connectionthread.h"
 
+#include <QTimer>
 #include <QMainWindow>
 
 namespace Ui
@@ -28,16 +29,17 @@ protected:
 private:
     Ui::MainWindow *ui;
     QString m_username, m_opp_username;
-    Const::HostType m_type;
+    Const::HostType m_type, m_current_player;
     QString m_ip;
     int m_port;
-
-    Player* m_player;
-    bool m_is_block, m_is_closing, m_is_choosing_color, m_is_connected;
 
     Server* m_server;
     Connection* m_connection;
     ConnectionThread* m_thread;
+
+    QTimer m_timer;
+    int m_time_left, m_my_tot_time, m_opp_tot_time;
+    bool m_is_block, m_is_closing, m_is_choosing_color, m_is_connected;
 
     void setBlock(bool isBlock);
     void initialize();
@@ -46,6 +48,8 @@ private:
     void nextMove();
 
 private slots:
+    void onTimeOut();
+
     void onConnectionReady(const QString& oppUsername);
     void onDisConnected();
     //void onConnectionError(QAbstractSocket::SocketError socketError);
