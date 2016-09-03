@@ -39,6 +39,7 @@ private:
 
     QTimer m_timer;
     int m_time_left, m_my_tot_time, m_opp_tot_time;
+    bool m_can_back;
     bool m_is_block, m_is_closing, m_is_choosing_color, m_is_connected;
 
     void setBlock(bool isBlock);

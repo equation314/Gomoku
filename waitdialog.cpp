@@ -42,5 +42,6 @@ void WaitDialog::onBackDisallowed()
     ui->buttonBox->setEnabled(true);
     this->setWindowTitle(tr("Not Allowed"));
     this->activateWindow();
+    emit backDisallowed();
 }
 

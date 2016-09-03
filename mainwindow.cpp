@@ -13,7 +13,7 @@ MainWindow::MainWindow(const QString& username, Const::HostType type, const QStr
     ui(new Ui::MainWindow),
     m_username(username), m_type(type), m_ip(ip), m_port(port),
     m_server(nullptr), m_thread(nullptr),
-    m_my_tot_time(0), m_opp_tot_time(0),
+    m_my_tot_time(0), m_opp_tot_time(0), m_can_back(false),
     m_is_block(true), m_is_closing(false), m_is_choosing_color(false), m_is_connected(false)
 {
     ui->setupUi(this);
@@ -160,6 +160,11 @@ void MainWindow::onTimeOut()
         else
             ui->lcdNumber_time_left_2->setStyleSheet("");
     }
+    if (!m_time_left)
+    {
+        m_can_back = false;
+        nextMove();
+    }
 }
 
 void MainWindow::onConnectionReady(const QString& oppUsername)
@@ -301,12 +306,15 @@ void MainWindow::onOpponentMove(int row, int col, Pieces::PiecesColor color)
     m_is_choosing_color = false;
     ui->label_info->setText(tr("Please select a position to place the pieces."));
     ui->board->PlacePiece(row, col, (Pieces::PiecesColor)color);
+    if (row < 0) m_can_back = false;
+    ui->pushButton_back->setEnabled(ui->board->MyPieces() && m_can_back);
 }
 
 void MainWindow::onMyMove(int row, int col, Pieces::PiecesColor color)
 {
     m_is_choosing_color = false;
-    ui->pushButton_back->setEnabled(ui->board->MyPieces());
+    m_can_back = row >= 0;
+    ui->pushButton_back->setEnabled(ui->board->MyPieces() && m_can_back);
     ui->label_info->setText(tr("Waiting for the opponent to place..."));
     setBlock(true);
 
@@ -321,15 +329,22 @@ void MainWindow::onMyMove(int row, int col, Pieces::PiecesColor color)
 void MainWindow::onOpponentBackRequest()
 {
     int backStep = m_is_block ? 2 : 1;
+    m_timer.stop();
     if (QMessageBox::question(this, tr("Back Request"), QString(tr("Do you allow the opponent to move back before %1 step%2?")).arg(backStep).arg(backStep == 1 ? "" : "s")) == QMessageBox::Yes)
     {
         emit messageSent("allowback");
         ui->board->BackMove(backStep);
         ui->pushButton_back->setEnabled(ui->board->MyPieces());
         if (backStep == 1) nextMove();
+
+        m_time_left = Const::TIME_LIMIT + 1;
+        if (m_is_block) m_opp_tot_time--; else m_opp_tot_time--;
+        m_timer.start(1000);
+        onTimeOut();
     }
     else
         emit messageSent("disallowback");
+    m_timer.start(1000);
 }
 
 void MainWindow::onOpponentThrow()
@@ -359,14 +374,24 @@ void MainWindow::on_pushButton_back_clicked()
     int backStep = m_is_block ? 1 : 2;
     if (QMessageBox::question(this, tr("Back Move"), QString(tr("Do you want to move back before %1 step%2?")).arg(backStep).arg(backStep == 1 ? "" : "s")) == QMessageBox::Yes)
     {
+        m_timer.stop();
         emit messageSent("back");
         WaitDialog dialog;
         connect(m_connection, &Connection::backAllowed, &dialog, &WaitDialog::onBackAllowed);
         connect(m_connection, &Connection::backDisallowed, &dialog, &WaitDialog::onBackDisallowed);
+        connect(&dialog, &WaitDialog::backDisallowed, this, [this]()
+        {
+            m_timer.start(1000);
+        });
         connect(&dialog, &WaitDialog::backAllowed, this, [&, this]()
         {
             ui->board->BackMove(backStep);
             ui->pushButton_back->setEnabled(ui->board->MyPieces());
+
+            m_time_left = Const::TIME_LIMIT + 1;
+            if (m_is_block) m_opp_tot_time--; else m_opp_tot_time--;
+            m_timer.start(1000);
+            onTimeOut();
         });
         dialog.exec();
     }

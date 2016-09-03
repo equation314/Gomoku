@@ -94,7 +94,15 @@ void Board::paintEvent(QPaintEvent* event)
 
 void Board::mouseMoveEvent(QMouseEvent* event)
 {
-    if (m_is_block) return;
+    if (m_is_block)
+    {
+        for (int i = 0; i <= Const::SIZE; i++)
+            for (int j = 0; j <= Const::SIZE; j++)
+                if (m_board[i][j].State() == Pieces::Hover)
+                    m_board[i][j].SetState(Pieces::None);
+        this->update();
+        return;
+    }
     for (int i = 0; i <= Const::SIZE; i++)
         for (int j = 0; j <= Const::SIZE; j++)
             if (m_board[i][j].State() != Pieces::Placed)

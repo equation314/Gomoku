@@ -29,6 +29,7 @@ private:
 
 signals:
     void backAllowed();
+    void backDisallowed();
 };
 
 #endif // WAITDIALOG_H

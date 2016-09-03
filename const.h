@@ -14,7 +14,7 @@ enum HostType
     Client
 };
 
-const int TIME_LIMIT = 30;
+const int TIME_LIMIT = 10;
 const int SIZE = 14;
 const int POINT[5][2] =
 {
