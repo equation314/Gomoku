@@ -1,7 +1,6 @@
 #include "connectdialog.h"
 #include "ui_connectdialog.h"
 
-#include <QDebug>
 #include <QTcpServer>
 #include <QMessageBox>
 #include <QTranslator>
@@ -94,6 +93,12 @@ void ConnectDialog::on_radioButton_server_clicked()
     ui->pushButton_create->setText(tr("&Create"));
 
     QStringList ip = Const::GetLocalIp().split('.');
+    if (ip.size() != 4)
+    {
+        QMessageBox::critical(this, tr("Invalid IP Address"), tr("Cannot get valid IP address.\nPlease check the network connection."));
+        qApp->quit();
+        return;
+    }
     ui->lineEdit_0->setText(ip[0]);
     ui->lineEdit_1->setText(ip[1]);
     ui->lineEdit_2->setText(ip[2]);

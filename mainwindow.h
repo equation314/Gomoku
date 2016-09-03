@@ -71,7 +71,6 @@ private slots:
     void on_pushButton_disconnect_clicked();
 
     void on_action_about_triggered();
-
     void on_action_exit_triggered();
 
 signals:

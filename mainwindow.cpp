@@ -102,7 +102,7 @@ void MainWindow::initialize()
 
 void MainWindow::createServerConnection(ConnectionThread* thread)
 {
-    qDebug()<<"New Connection";
+    //qDebug()<<"New Connection";
     if (m_is_connected) return;
     m_is_connected = true;
     m_thread = thread;
@@ -195,7 +195,7 @@ void MainWindow::onConnectionReady(const QString& oppUsername)
     ui->label_status->setText(tr("Connected"));
     ui->label_status->setStyleSheet("color:green;");
     ui->pushButton_disconnect->SetEnabled(true);
-    qDebug()<<"Server Ready "<<oppUsername;
+    //qDebug()<<"Server Ready "<<oppUsername;
 
     if (m_type == Const::Server)
     {
@@ -220,7 +220,7 @@ void MainWindow::onDisConnected()
     ui->pushButton_disconnect->SetEnabled(false);
     m_thread->deleteLater();
     if (m_is_closing) return;
-    qDebug()<<"DisConnected";
+    //qDebug()<<"DisConnected";
 
     QString info = tr("Connection has been disconnected!");
     if (m_type == Const::Client) info += tr("\nThe game will restart.");
@@ -372,6 +372,7 @@ void MainWindow::onOpponentBackRequest()
 {
     int backStep = m_is_block ? 2 : 1;
     m_timer.stop();
+    ui->board->SetHidden(true);
     if (QMessageBox::question(this, tr("Back Request"), QString(tr("Do you allow the opponent to move back before %1 step%2?")).arg(backStep).arg(backStep == 1 ? "" : "s")) == QMessageBox::Yes)
     {
         emit messageSent("allowback");
@@ -386,6 +387,7 @@ void MainWindow::onOpponentBackRequest()
     }
     else
         emit messageSent("disallowback");
+    ui->board->SetHidden(false);
     m_timer.start(1000);
 }
 
@@ -430,6 +432,7 @@ void MainWindow::on_pushButton_back_clicked()
     if (QMessageBox::question(this, tr("Back Move"), QString(tr("Do you want to move back before %1 step%2?")).arg(backStep).arg(backStep == 1 ? "" : "s")) == QMessageBox::Yes)
     {
         m_timer.stop();
+        ui->board->SetHidden(true);
         emit messageSent("back");
         WaitDialog dialog(this);
         connect(m_connection, &Connection::backAllowed, &dialog, &WaitDialog::onBackAllowed);
@@ -437,6 +440,7 @@ void MainWindow::on_pushButton_back_clicked()
         connect(&dialog, &WaitDialog::backDisallowed, this, [this]()
         {
             m_timer.start(1000);
+            ui->board->SetHidden(false);
         });
         connect(&dialog, &WaitDialog::backAllowed, this, [&, this]()
         {
@@ -446,6 +450,7 @@ void MainWindow::on_pushButton_back_clicked()
             m_time_left = Const::TIME_LIMIT + 1;
             if (m_is_block) m_opp_tot_time--; else m_opp_tot_time--;
             m_timer.start(1000);
+            ui->board->SetHidden(false);
             onTimeOut();
         });
         dialog.exec();

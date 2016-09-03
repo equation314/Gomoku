@@ -4,7 +4,6 @@
 #include "const.h"
 #include "pieces.h"
 
-#include <QPoint>
 #include <QTimer>
 #include <QWidget>
 #include <QStack>

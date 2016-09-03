@@ -245,7 +245,7 @@
         <location filename="../forms/mainwindow.ui" line="199"/>
         <location filename="../forms/mainwindow.ui" line="512"/>
         <source>&amp;Back</source>
-        <translation>悔棋(&amp;H)</translation>
+        <translation>悔棋(&amp;B)</translation>
     </message>
     <message>
         <location filename="../forms/mainwindow.ui" line="209"/>

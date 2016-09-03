@@ -1,8 +1,6 @@
 #include "connection.h"
 
-#include <QDebug>
 #include <QDataStream>
-#include <QThread>
 
 Connection::Connection(QObject *parent) :
     QTcpSocket(parent)
@@ -15,7 +13,7 @@ Connection::Connection(QObject *parent) :
 
 void Connection::sentMessage(const QString &message)
 {
-    qDebug()<<"seed message "<<message;
+    //qDebug()<<"seed message "<<message;
     QByteArray array;
     QDataStream out(&array, QIODevice::WriteOnly);
     out << QString("MESSAGE") << message;
@@ -24,7 +22,7 @@ void Connection::sentMessage(const QString &message)
 
 void Connection::sendMove(int row, int col, Pieces::PiecesColor color)
 {
-    qDebug()<<"seed move";
+    //qDebug()<<"seed move";
     QByteArray array;
     QDataStream out(&array, QIODevice::WriteOnly);
     out << QString("MOVE");
@@ -43,7 +41,7 @@ void Connection::sendPrepareState(bool isAccepted, int state0, int state1, const
 
 void Connection::greeting()
 {
-    qDebug()<<m_greeting_message;
+    //qDebug()<<m_greeting_message;
     QByteArray array;
     QDataStream out(&array, QIODevice::WriteOnly);
     out << QString("GREETING") << m_greeting_message;
@@ -57,12 +55,12 @@ void Connection::onReceivedData()
     for (QString type; !in.atEnd();)
     {
         in >> type;
-        qDebug()<<"Received"<<' '<<type;
+        //qDebug()<<"Received"<<' '<<type;
         if (type == "GREETING")
         {
             QString username;
             in >> username;
-            qDebug()<<username;
+            //qDebug()<<username;
             emit connectionReady(username);
         }
         else if (type == "PREPARE")
@@ -83,7 +81,7 @@ void Connection::onReceivedData()
         {
             QString message;
             in >> message;
-            qDebug()<<message;
+            //qDebug()<<message;
             if (message == "start")
                 emit gameStartReceived();
             else if (message == "pause")

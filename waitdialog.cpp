@@ -10,6 +10,7 @@ WaitDialog::WaitDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+    this->setFixedSize(240, 100);
 }
 
 WaitDialog::~WaitDialog()

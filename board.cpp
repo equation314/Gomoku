@@ -1,7 +1,6 @@
 #include "const.h"
 #include "board.h"
 
-#include <QDebug>
 #include <QPainter>
 #include <QMouseEvent>
 #include <QMessageBox>
@@ -232,7 +231,7 @@ void Board::BackMove(int round)
     for (int i = 0; i < round && m_stack.size(); i++)
     {
         Pieces pieces = m_stack.top();
-        qDebug()<<i<<' '<<pieces.Row()<<' '<<pieces.Column()<<' '<<pieces.Color();
+        //qDebug()<<i<<' '<<pieces.Row()<<' '<<pieces.Column()<<' '<<pieces.Color();
         m_board[pieces.Row()][pieces.Column()].SetState(Pieces::None);
         m_board[pieces.Row()][pieces.Column()].SetColor(Pieces::Transpraent);
         m_stack.pop();
