@@ -20,7 +20,8 @@ public:
     int MyPieces() const { return m_my_pieces; }
 
     // Setter member functions
-    void SetBlock(bool isBlock) { m_is_block = isBlock; }
+    void SetHidden(bool hidden) { m_is_hidden = hidden; this->update(); }
+    void SetBlock(bool block) { m_is_block = block; }
     void SetColor(Pieces::PiecesColor color) { m_color = color; }
 
     void Clear();
@@ -39,7 +40,7 @@ private:
     QPointF m_center;
     Pieces::PiecesColor m_color;
     double m_cell_width;
-    bool m_is_block;
+    bool m_is_block, m_is_hidden;
     int m_round, m_my_pieces;
 
     // for hint

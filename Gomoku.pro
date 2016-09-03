@@ -18,7 +18,6 @@ SOURCES += main.cpp\
     board.cpp \
     pieces.cpp \
     connectdialog.cpp \
-    player.cpp \
     choosecolordialog.cpp \
     connection.cpp \
     server.cpp \
@@ -31,7 +30,6 @@ HEADERS  += mainwindow.h \
     const.h \
     pieces.h \
     connectdialog.h \
-    player.h \
     choosecolordialog.h \
     connection.h \
     server.h \

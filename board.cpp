@@ -47,6 +47,7 @@ void Board::paintEvent(QPaintEvent* event)
     pen.setJoinStyle(Qt::MiterJoin);
     painter.setPen(pen);
     painter.setBrush(QColor(255, 255, 170));
+    if (m_is_hidden) painter.setBrush(Qt::transparent);
     painter.drawRect(-frameWidth / 2, -frameWidth / 2, frameWidth, frameWidth);
 
     painter.setPen(Qt::black);
@@ -61,6 +62,7 @@ void Board::paintEvent(QPaintEvent* event)
     for (int i = 0; i < 5; i++)
         painter.drawEllipse((Const::POINT[i][0] - halfSize) * m_cell_width - r / 2, (Const::POINT[i][1] - halfSize) * m_cell_width - r / 2, r, r);
 
+    if (m_is_hidden) return;
     r = m_cell_width / 2;
     for (int i = 0; i <= Const::SIZE; i++)
         for (int j = 0; j <= Const::SIZE; j++)

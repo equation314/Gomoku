@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>807</width>
-    <height>617</height>
+    <height>632</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -168,25 +168,12 @@
       </layout>
      </widget>
     </item>
-    <item row="3" column="0">
+    <item row="4" column="0">
      <widget class="QGroupBox" name="groupBox_move">
       <property name="title">
        <string>&amp;Move</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QPushButton" name="pushButton_start">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>&amp;Start</string>
-         </property>
-         <property name="default">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="QPushButton" name="pushButton_hint">
          <property name="enabled">
@@ -350,7 +337,7 @@
       </layout>
      </widget>
     </item>
-    <item row="4" column="0">
+    <item row="5" column="0">
      <widget class="QGroupBox" name="groupBox_connection">
       <property name="title">
        <string>&amp;Connnection</string>
@@ -380,7 +367,7 @@
         </widget>
        </item>
        <item row="1" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton_disconnnect">
+        <widget class="QPushButton" name="pushButton_disconnect">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -392,7 +379,7 @@
       </layout>
      </widget>
     </item>
-    <item row="5" column="0">
+    <item row="6" column="0">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -405,7 +392,7 @@
       </property>
      </spacer>
     </item>
-    <item row="1" column="1" rowspan="5">
+    <item row="1" column="1" rowspan="6">
      <widget class="Board" name="board" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -413,6 +400,38 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QGroupBox" name="groupBox_game">
+      <property name="title">
+       <string>&amp;Game</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QPushButton" name="pushButton_start">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>&amp;Start</string>
+         </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_pause">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>&amp;Pause</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>

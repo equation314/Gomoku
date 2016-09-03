@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include "const.h"
-#include "player.h"
 #include "server.h"
 #include "connectionthread.h"
 
@@ -40,7 +39,7 @@ private:
     QTimer m_timer;
     int m_time_left, m_my_tot_time, m_opp_tot_time;
     bool m_can_back;
-    bool m_is_block, m_is_closing, m_is_choosing_color, m_is_connected;
+    bool m_is_block, m_is_started, m_is_closing, m_is_choosing_color, m_is_connected;
 
     void setBlock(bool isBlock);
     void initialize();
@@ -55,18 +54,22 @@ private slots:
     void onDisConnected();
     //void onConnectionError(QAbstractSocket::SocketError socketError);
 
-    void onChooseColor();
     void onGameStartPrepare();
+    void onChooseColor();
+    void onPause();
+    void onContinue();
+
     void onMyMove(int row, int col, Pieces::PiecesColor color);
     void onOpponentMove(int row, int col, Pieces::PiecesColor color);
     void onOpponentBackRequest();
     void onOpponentThrow();
 
     void on_pushButton_start_clicked();
+    void on_pushButton_pause_clicked();
     void on_pushButton_hint_clicked();
     void on_pushButton_back_clicked();
     void on_pushButton_throw_clicked();
-    void on_pushButton_disconnnect_clicked();
+    void on_pushButton_disconnect_clicked();
 
 signals:
     void disconnected();

@@ -29,8 +29,12 @@ private slots:
 
 signals:
     void connectionReady(const QString& username);
-    void gameStartReceived();
     void prepareStateReceived(bool isAccepted, int state0, int state1, const QString& username);
+
+    void gameStartReceived();
+    void pauseReceived();
+    void continueReceived();
+
     void moveReceived(int row, int col, Pieces::PiecesColor color);
     void opponentBackRequest();
     void backAllowed();

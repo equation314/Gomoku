@@ -14,7 +14,7 @@ MainWindow::MainWindow(const QString& username, Const::HostType type, const QStr
     m_username(username), m_type(type), m_ip(ip), m_port(port),
     m_server(nullptr), m_thread(nullptr),
     m_my_tot_time(0), m_opp_tot_time(0), m_can_back(false),
-    m_is_block(true), m_is_closing(false), m_is_choosing_color(false), m_is_connected(false)
+    m_is_block(true), m_is_started(false), m_is_closing(false), m_is_choosing_color(false), m_is_connected(false)
 {
     ui->setupUi(this);
 
@@ -71,8 +71,10 @@ void MainWindow::initialize()
     ui->label_info->setText(tr("Waiting for connection..."));
     m_is_choosing_color = false;
     setBlock(true);
+    ui->board->SetHidden(false);
     ui->pushButton_throw->setEnabled(false);
     ui->pushButton_start->setEnabled(false);
+    ui->pushButton_pause->setEnabled(false);
     ui->label_color1->setPixmap(QPixmap());
     ui->label_color2->setPixmap(QPixmap());
     if (m_type == Const::Server)
@@ -173,7 +175,11 @@ void MainWindow::onConnectionReady(const QString& oppUsername)
     connect(this, &MainWindow::moveSent, m_connection, &Connection::sendMove);
     connect(this, &MainWindow::messageSent, m_connection, &Connection::sentMessage);
     connect(this, &MainWindow::disconnected, m_connection, &Connection::close);
+
     connect(m_connection, &Connection::gameStartReceived, this, &MainWindow::onChooseColor);
+    connect(m_connection, &Connection::pauseReceived, this, &MainWindow::onPause);
+    connect(m_connection, &Connection::continueReceived, this, &MainWindow::onContinue);
+
     connect(m_connection, &Connection::moveReceived, this, &MainWindow::onOpponentMove);
     connect(m_connection, &Connection::opponentBackRequest, this, &MainWindow::onOpponentBackRequest);
     connect(m_connection, &Connection::opponentThrowRecived, this, &MainWindow::onOpponentThrow);
@@ -181,22 +187,19 @@ void MainWindow::onConnectionReady(const QString& oppUsername)
 
     ui->label_status->setText("Connected");
     ui->label_status->setStyleSheet("color:green;");
-    ui->pushButton_disconnnect->setEnabled(true);
+    ui->pushButton_disconnect->setEnabled(true);
     qDebug()<<"Server Ready "<<oppUsername;
 
     if (m_type == Const::Server)
     {
         ui->groupBox_player_2->setTitle(oppUsername);
         ui->label_ip2->setText(QString("%1:%2").arg(m_connection->peerAddress().toString()).arg(m_connection->peerPort()));
-        ui->pushButton_start->setEnabled(true);
-        ui->label_info->setText(tr("Press the start button to start a new game."));
     }
     else if (m_type == Const::Client)
     {
         ui->groupBox_player_1->setTitle(oppUsername);
         ui->label_ip1->setText(QString("%1:%2").arg(m_ip).arg(m_port));
         ui->label_ip2->setText(QString("%1:%2").arg(Const::GetLocalIp()).arg(m_connection->localPort()));
-        ui->label_info->setText(tr("Waiting for the server to start..."));
     }
     onGameStartPrepare();
 }
@@ -212,7 +215,7 @@ void MainWindow::onDisConnected()
     m_timer.stop();
     ui->label_status->setText("Disconnected");
     ui->label_status->setStyleSheet("color:red;");
-    ui->pushButton_disconnnect->setEnabled(false);
+    ui->pushButton_disconnect->setEnabled(false);
     m_thread->deleteLater();
     if (m_is_closing) return;
     qDebug()<<"DisConnected";
@@ -229,6 +232,8 @@ void MainWindow::onGameStartPrepare()
     m_timer.stop();
     if (m_is_choosing_color) return;
     this->setBlock(true);
+    m_is_started = false;
+    ui->pushButton_start->setText(tr("&Start"));
     ui->pushButton_back->setEnabled(false);
     ui->pushButton_throw->setEnabled(false);
     if (m_type == Const::Server)
@@ -291,8 +296,42 @@ void MainWindow::onChooseColor()
     painter.drawEllipse(QPoint(9, 9), 8, 8);
     ui->label_color2->setPixmap(pixmap);
 
-    ui->pushButton_throw->setEnabled(true);
+    ui->pushButton_start->setText(tr("&Continue"));
     ui->pushButton_start->setEnabled(false);
+    ui->pushButton_pause->setEnabled(true);
+    ui->pushButton_throw->setEnabled(true);
+    m_is_started = true;
+}
+
+void MainWindow::onPause()
+{
+    m_timer.stop();
+    ui->label_info->setText(tr("Pause"));
+    ui->pushButton_pause->setEnabled(false);
+
+    ui->pushButton_hint->setEnabled(false);
+    ui->pushButton_back->setEnabled(false);
+    ui->pushButton_throw->setEnabled(false);
+
+    ui->board->SetBlock(true);
+    ui->board->SetHidden(true);
+}
+
+void MainWindow::onContinue()
+{
+    m_timer.start(1000);
+    if (!m_is_block)
+        ui->label_info->setText(tr("Please select a position to place the pieces."));
+    else
+        ui->label_info->setText(tr("Waiting for the opponent to place..."));
+    ui->pushButton_pause->setEnabled(true);
+
+    ui->pushButton_hint->setEnabled(!m_is_block);
+    ui->pushButton_back->setEnabled(ui->board->MyPieces() && m_can_back);
+    ui->pushButton_throw->setEnabled(true);
+
+    ui->board->SetBlock(m_is_block);
+    ui->board->SetHidden(false);
 }
 
 void MainWindow::onOpponentMove(int row, int col, Pieces::PiecesColor color)
@@ -357,11 +396,24 @@ void MainWindow::onOpponentThrow()
 
 void MainWindow::on_pushButton_start_clicked()
 {
-    if (m_type == Const::Server)
+    if (m_is_started)
+    {
+        emit messageSent("continue");
+        ui->pushButton_start->setEnabled(false);
+        onContinue();
+    }
+    else if (m_type == Const::Server)
     {
         emit messageSent("start");
         onChooseColor();
     }
+}
+
+void MainWindow::on_pushButton_pause_clicked()
+{
+    emit messageSent("pause");
+    ui->pushButton_start->setEnabled(true);
+    onPause();
 }
 
 void MainWindow::on_pushButton_hint_clicked()
@@ -409,7 +461,8 @@ void MainWindow::on_pushButton_throw_clicked()
     }
 }
 
-void MainWindow::on_pushButton_disconnnect_clicked()
+void MainWindow::on_pushButton_disconnect_clicked()
 {
-    emit disconnected();
+    if (QMessageBox::question(this, tr("Disconnect"), tr("Do you really want to disconnect?")) == QMessageBox::Yes)
+        emit disconnected();
 }
