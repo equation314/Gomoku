@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>icon/bomb.png</file>
+        <file>icon/gomoku.ico</file>
+    </qresource>
+    <qresource prefix="/trans">
+        <file>trans/qt_zh_CN.qm</file>
+        <file>trans/qt_zh_CN.ts</file>
+        <file>trans/zh_CN.qm</file>
+        <file>trans/zh_CN.ts</file>
+    </qresource>
+</RCC>

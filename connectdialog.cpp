@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QTcpServer>
 #include <QMessageBox>
+#include <QTranslator>
 
 ConnectDialog::ConnectDialog(QWidget *parent) :
     QDialog(parent),
@@ -89,7 +90,7 @@ void ConnectDialog::on_radioButton_server_clicked()
 {
     m_type = Const::Server;
     this->setWindowTitle(tr("Create Server"));
-    ui->label->setText(tr("Host &IP:"));
+    ui->label->setText(tr("Local &IP:"));
     ui->pushButton_create->setText(tr("&Create"));
 
     QStringList ip = Const::GetLocalIp().split('.');

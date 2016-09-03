@@ -11,10 +11,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Gomoku
 TEMPLATE = app
 
-CONFIG += c++11
+#CONFIG += c++11
+
+TRANSLATIONS += resource/trans/zh_CN.ts
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     board.cpp \
     pieces.cpp \
     connectdialog.cpp \
@@ -23,7 +25,8 @@ SOURCES += main.cpp\
     server.cpp \
     connectionthread.cpp \
     dialpaddialog.cpp \
-    waitdialog.cpp
+    waitdialog.cpp \
+    actionbutton.cpp
 
 HEADERS  += mainwindow.h \
     board.h \
@@ -35,7 +38,8 @@ HEADERS  += mainwindow.h \
     server.h \
     connectionthread.h \
     dialpaddialog.h \
-    waitdialog.h
+    waitdialog.h \
+    actionbutton.h
 
 FORMS    += forms/mainwindow.ui \
     forms/connectdialog.ui \
@@ -44,7 +48,7 @@ FORMS    += forms/mainwindow.ui \
     forms/waitdialog.ui
 
 RESOURCES += \
-    resource/icon.qrc
+    resource/res.qrc
 
 RC_FILE += \
     resource/icon.rc

@@ -138,7 +138,7 @@
    <item row="3" column="0" colspan="2">
     <widget class="QLabel" name="label_info">
      <property name="text">
-      <string>Please choose one color</string>
+      <string>Please choose one color.</string>
      </property>
     </widget>
    </item>

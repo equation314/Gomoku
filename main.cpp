@@ -1,10 +1,18 @@
 #include "mainwindow.h"
 #include "connectdialog.h"
+
+#include <QTranslator>
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    QTranslator trans1, trans2;
+    trans1.load(":/trans/trans/zh_CN.qm");
+    trans2.load(":/trans/trans/qt_zh_CN.qm");
+    qApp->installTranslator(&trans1);
+    qApp->installTranslator(&trans2);
 
     qRegisterMetaType<Pieces::PiecesColor>("Pieces::PiecesColor");
 

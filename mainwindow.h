@@ -52,7 +52,6 @@ private slots:
 
     void onConnectionReady(const QString& oppUsername);
     void onDisConnected();
-    //void onConnectionError(QAbstractSocket::SocketError socketError);
 
     void onGameStartPrepare();
     void onChooseColor();
@@ -70,6 +69,10 @@ private slots:
     void on_pushButton_back_clicked();
     void on_pushButton_throw_clicked();
     void on_pushButton_disconnect_clicked();
+
+    void on_action_about_triggered();
+
+    void on_action_exit_triggered();
 
 signals:
     void disconnected();

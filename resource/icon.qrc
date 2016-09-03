@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/icon">
-        <file>bomb.png</file>
-        <file>gomoku.ico</file>
-    </qresource>
-</RCC>

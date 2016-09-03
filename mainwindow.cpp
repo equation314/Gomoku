@@ -18,6 +18,13 @@ MainWindow::MainWindow(const QString& username, Const::HostType type, const QStr
 {
     ui->setupUi(this);
 
+    ui->pushButton_start->SetAction(ui->action_start);
+    ui->pushButton_pause->SetAction(ui->action_pause);
+    ui->pushButton_hint->SetAction(ui->action_hint);
+    ui->pushButton_back->SetAction(ui->action_back);
+    ui->pushButton_throw->SetAction(ui->action_throw);
+    ui->pushButton_disconnect->SetAction(ui->action_disconnect);
+
     ui->lcdNumber_time_left_1->display("00");
     ui->lcdNumber_time_left_2->display("00");
     ui->lcdNumber_time_used_1->display("00:00");
@@ -61,7 +68,7 @@ void MainWindow::setBlock(bool isBlock)
     if (isBlock) m_current_player = m_type == Const::Server ? Const::Client : Const::Server;
     m_is_block = isBlock;
     ui->board->SetBlock(isBlock);
-    ui->pushButton_hint->setEnabled(!isBlock);
+    ui->pushButton_hint->SetEnabled(!isBlock);
 }
 
 void MainWindow::initialize()
@@ -72,9 +79,9 @@ void MainWindow::initialize()
     m_is_choosing_color = false;
     setBlock(true);
     ui->board->SetHidden(false);
-    ui->pushButton_throw->setEnabled(false);
-    ui->pushButton_start->setEnabled(false);
-    ui->pushButton_pause->setEnabled(false);
+    ui->pushButton_throw->SetEnabled(false);
+    ui->pushButton_start->SetEnabled(false);
+    ui->pushButton_pause->SetEnabled(false);
     ui->label_color1->setPixmap(QPixmap());
     ui->label_color2->setPixmap(QPixmap());
     if (m_type == Const::Server)
@@ -82,13 +89,13 @@ void MainWindow::initialize()
         ui->label_ip1->setText(QString("%1:%2").arg(Const::GetLocalIp()).arg(m_port));
         ui->label_ip2->setText("");
         ui->groupBox_player_1->setTitle(m_username);
-        ui->groupBox_player_2->setTitle("Player2");
+        ui->groupBox_player_2->setTitle(tr("Player2"));
     }
     else if (m_type == Const::Client)
     {
         ui->label_ip1->setText("");
         ui->label_ip2->setText("");
-        ui->groupBox_player_1->setTitle("Player1");
+        ui->groupBox_player_1->setTitle(tr("Player1"));
         ui->groupBox_player_2->setTitle(m_username);
     }
 }
@@ -185,9 +192,9 @@ void MainWindow::onConnectionReady(const QString& oppUsername)
     connect(m_connection, &Connection::opponentThrowRecived, this, &MainWindow::onOpponentThrow);
     connect(m_connection, &QTcpSocket::disconnected, this, &MainWindow::onDisConnected);
 
-    ui->label_status->setText("Connected");
+    ui->label_status->setText(tr("Connected"));
     ui->label_status->setStyleSheet("color:green;");
-    ui->pushButton_disconnect->setEnabled(true);
+    ui->pushButton_disconnect->SetEnabled(true);
     qDebug()<<"Server Ready "<<oppUsername;
 
     if (m_type == Const::Server)
@@ -204,18 +211,13 @@ void MainWindow::onConnectionReady(const QString& oppUsername)
     onGameStartPrepare();
 }
 
-/*void MainWindow::onConnectionError(QAbstractSocket::SocketError socketError)
-{
-    qDebug()<<"ConnectionError";
-}*/
-
 void MainWindow::onDisConnected()
 {
     m_is_connected = false;
     m_timer.stop();
-    ui->label_status->setText("Disconnected");
+    ui->label_status->setText(tr("Disconnected"));
     ui->label_status->setStyleSheet("color:red;");
-    ui->pushButton_disconnect->setEnabled(false);
+    ui->pushButton_disconnect->SetEnabled(false);
     m_thread->deleteLater();
     if (m_is_closing) return;
     qDebug()<<"DisConnected";
@@ -233,12 +235,13 @@ void MainWindow::onGameStartPrepare()
     if (m_is_choosing_color) return;
     this->setBlock(true);
     m_is_started = false;
-    ui->pushButton_start->setText(tr("&Start"));
-    ui->pushButton_back->setEnabled(false);
-    ui->pushButton_throw->setEnabled(false);
+    ui->pushButton_start->SetText(tr("&Start"));
+    ui->pushButton_pause->SetEnabled(false);
+    ui->pushButton_back->SetEnabled(false);
+    ui->pushButton_throw->SetEnabled(false);
     if (m_type == Const::Server)
     {
-        ui->pushButton_start->setEnabled(true);
+        ui->pushButton_start->SetEnabled(true);
         ui->label_info->setText(tr("Press the start button to start a new game."));
     }
     else if (m_type == Const::Client)
@@ -296,22 +299,22 @@ void MainWindow::onChooseColor()
     painter.drawEllipse(QPoint(9, 9), 8, 8);
     ui->label_color2->setPixmap(pixmap);
 
-    ui->pushButton_start->setText(tr("&Continue"));
-    ui->pushButton_start->setEnabled(false);
-    ui->pushButton_pause->setEnabled(true);
-    ui->pushButton_throw->setEnabled(true);
+    ui->pushButton_start->SetText(tr("&Continue"));
+    ui->pushButton_start->SetEnabled(false);
+    ui->pushButton_pause->SetEnabled(true);
+    ui->pushButton_throw->SetEnabled(true);
     m_is_started = true;
 }
 
 void MainWindow::onPause()
 {
     m_timer.stop();
-    ui->label_info->setText(tr("Pause"));
-    ui->pushButton_pause->setEnabled(false);
+    ui->label_info->setText(tr("Pausing..."));
+    ui->pushButton_pause->SetEnabled(false);
 
-    ui->pushButton_hint->setEnabled(false);
-    ui->pushButton_back->setEnabled(false);
-    ui->pushButton_throw->setEnabled(false);
+    ui->pushButton_hint->SetEnabled(false);
+    ui->pushButton_back->SetEnabled(false);
+    ui->pushButton_throw->SetEnabled(false);
 
     ui->board->SetBlock(true);
     ui->board->SetHidden(true);
@@ -324,11 +327,11 @@ void MainWindow::onContinue()
         ui->label_info->setText(tr("Please select a position to place the pieces."));
     else
         ui->label_info->setText(tr("Waiting for the opponent to place..."));
-    ui->pushButton_pause->setEnabled(true);
+    ui->pushButton_pause->SetEnabled(true);
 
-    ui->pushButton_hint->setEnabled(!m_is_block);
-    ui->pushButton_back->setEnabled(ui->board->MyPieces() && m_can_back);
-    ui->pushButton_throw->setEnabled(true);
+    ui->pushButton_hint->SetEnabled(!m_is_block);
+    ui->pushButton_back->SetEnabled(ui->board->MyPieces() && m_can_back);
+    ui->pushButton_throw->SetEnabled(true);
 
     ui->board->SetBlock(m_is_block);
     ui->board->SetHidden(false);
@@ -344,16 +347,16 @@ void MainWindow::onOpponentMove(int row, int col, Pieces::PiecesColor color)
 
     m_is_choosing_color = false;
     ui->label_info->setText(tr("Please select a position to place the pieces."));
-    ui->board->PlacePiece(row, col, (Pieces::PiecesColor)color);
     if (row < 0) m_can_back = false;
-    ui->pushButton_back->setEnabled(ui->board->MyPieces() && m_can_back);
+    ui->pushButton_back->SetEnabled(ui->board->MyPieces() && m_can_back);
+    ui->board->PlacePiece(row, col, (Pieces::PiecesColor)color);
 }
 
 void MainWindow::onMyMove(int row, int col, Pieces::PiecesColor color)
 {
     m_is_choosing_color = false;
     m_can_back = row >= 0;
-    ui->pushButton_back->setEnabled(ui->board->MyPieces() && m_can_back);
+    ui->pushButton_back->SetEnabled(ui->board->MyPieces() && m_can_back);
     ui->label_info->setText(tr("Waiting for the opponent to place..."));
     setBlock(true);
 
@@ -373,7 +376,7 @@ void MainWindow::onOpponentBackRequest()
     {
         emit messageSent("allowback");
         ui->board->BackMove(backStep);
-        ui->pushButton_back->setEnabled(ui->board->MyPieces());
+        ui->pushButton_back->SetEnabled(ui->board->MyPieces());
         if (backStep == 1) nextMove();
 
         m_time_left = Const::TIME_LIMIT + 1;
@@ -390,7 +393,7 @@ void MainWindow::onOpponentThrow()
 {
     m_is_choosing_color = false;
     m_timer.stop();
-    QMessageBox::information(this, tr("WIN"), tr("The opponent throw the game :-)"));
+    QMessageBox::information(this, tr("WIN!"), tr("The opponent throw the game :-)"));
     onGameStartPrepare();
 }
 
@@ -399,7 +402,7 @@ void MainWindow::on_pushButton_start_clicked()
     if (m_is_started)
     {
         emit messageSent("continue");
-        ui->pushButton_start->setEnabled(false);
+        ui->pushButton_start->SetEnabled(false);
         onContinue();
     }
     else if (m_type == Const::Server)
@@ -412,7 +415,7 @@ void MainWindow::on_pushButton_start_clicked()
 void MainWindow::on_pushButton_pause_clicked()
 {
     emit messageSent("pause");
-    ui->pushButton_start->setEnabled(true);
+    ui->pushButton_start->SetEnabled(true);
     onPause();
 }
 
@@ -428,7 +431,7 @@ void MainWindow::on_pushButton_back_clicked()
     {
         m_timer.stop();
         emit messageSent("back");
-        WaitDialog dialog;
+        WaitDialog dialog(this);
         connect(m_connection, &Connection::backAllowed, &dialog, &WaitDialog::onBackAllowed);
         connect(m_connection, &Connection::backDisallowed, &dialog, &WaitDialog::onBackDisallowed);
         connect(&dialog, &WaitDialog::backDisallowed, this, [this]()
@@ -438,7 +441,7 @@ void MainWindow::on_pushButton_back_clicked()
         connect(&dialog, &WaitDialog::backAllowed, this, [&, this]()
         {
             ui->board->BackMove(backStep);
-            ui->pushButton_back->setEnabled(ui->board->MyPieces());
+            ui->pushButton_back->SetEnabled(ui->board->MyPieces());
 
             m_time_left = Const::TIME_LIMIT + 1;
             if (m_is_block) m_opp_tot_time--; else m_opp_tot_time--;
@@ -465,4 +468,28 @@ void MainWindow::on_pushButton_disconnect_clicked()
 {
     if (QMessageBox::question(this, tr("Disconnect"), tr("Do you really want to disconnect?")) == QMessageBox::Yes)
         emit disconnected();
+}
+
+void MainWindow::on_action_about_triggered()
+{
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle(tr("About Gomoku"));
+    msgBox.setText(QString(tr(
+                      "<h2>Online Gomoku Game<br/></h2>"
+                      "<p>THU 2016 Summer Term Programing and Training Project 2</p>"
+                      "<p>Based on Qt 5.7.0<br/></p>"
+                      "<p>Version: %1</p>"
+                      "<p>Built time: %2 - %3<br/></p>"
+                      "<p>Copyright © 2016 Yuekai Jia, CST, Tsinghua University</p>"
+                      "<p>All Right Reserved.<br/></p>"
+                      "<p>Project Index: <a href=\"https://github.com/equation314/Gomoku\">https://github.com/equation314/Gomoku</a></p>"
+                      )).arg("1.0.0").arg(__DATE__).arg(__TIME__));
+    msgBox.exec();
+}
+
+void MainWindow::on_action_exit_triggered()
+{
+    m_is_closing = true;
+    emit disconnected();
+    qApp->exit(0);
 }

@@ -69,7 +69,7 @@ void Board::paintEvent(QPaintEvent* event)
         {
             QPointF center((i - halfSize) * m_cell_width , (j - halfSize) * m_cell_width);
             if (m_bomb[i][j])
-                painter.drawPixmap(center.x() - r, center.y() - r, r * 2, r * 2, QPixmap(":/icon/bomb.png"));
+                painter.drawPixmap(center.x() - r, center.y() - r, r * 2, r * 2, QPixmap(":/icon/icon/bomb.png"));
             if (m_board[i][j].State() != Pieces::None)
             {
                 Pieces piece = m_board[i][j];
